@@ -12,37 +12,56 @@ As the ExptID is with each image, there is no need to have one file per experime
 
 import pyodbc
 import json
+import _connect
 import settings
 
-def connect():
-    """Function to connect to the datasource"""
-    conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=C:\Users\castells\Rothamsted Research\e-RA - Documents\General\website development\accessTools\timeline.accdb;')    
-    return conn
+# def connect():
+#     """Function to connect to the datasource"""
+#     conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=C:\Users\castells\Rothamsted Research\e-RA - Documents\General\website development\accessTools\timeline.accdb;')    
+#     return conn
 
-def getCursor():
-    """Returns a new Cursor object using the connection"""
-    con = connect()
-    cur = con.cursor()
-    return cur
+# def getCursor():
+#     """Returns a new Cursor object using the connection"""
+#     con = connect()
+#     cur = con.cursor()
+#     return cur
 
 
 class Image:
     """The class that will define an image. The row is the result of a query in the table
     try remove "settings.ROOT+" from URL 
+    #
+    SELECT i.id,  
+i.is_reviewed , 
+i.file_location , 
+i.is_www , 
+i.person_id , 
+p.given_name, 
+p.family_name, 
+i.caption, 
+i.description, 
+i.height, 
+i.width, 
+i.orientation, 
+i.experiment_code
+FROM images i
+JOIN persons p on i.person_id = p.id  
+
+
     """
     def __init__(self, row):
-        self.MediaID = row.mediaID 
-        self.Credit = row.Credit 
-        self.URL = "images/"+row.fileLocation  
-        self.Caption = row.Caption 
-        self.Type = row.Type 
-        self.exptID = row.exptID 
-        self.isReviewed = row.isReviewed 
-        self.forWWW = row.forWWW
+        self.MediaID = row.id 
+        self.Credit = row.given_name+" "+row.family_name 
+        self.URL = "images/"+row.file_location  
+        self.Caption = row.caption 
+        self.Type = row.image_type 
+        self.exptID = row.experiment_code 
+        self.isReviewed = row.is_reviewed 
+        self.forWWW = row.is_www
         self.width = row.width 
         self.height = row.height 
         self.orientation = row.orientation 
-        self.fileLocation = row.fileLocation 
+        self.fileLocation = row.file_location 
         
     def asImageJson(self):    
         image =  {         
@@ -64,7 +83,8 @@ class Image:
 
 
 def getImages(exptID = 'rothamsted'):
-    cur = getCursor()
+    cnx = _connect.connect()
+    cur = cnx.cursor()
     images = []
     
 #
@@ -82,8 +102,8 @@ def getImages(exptID = 'rothamsted'):
 # this selects the ones who are selected for for WWW which is the galleries. 
 
 
-
-    sql = f"Select * from qsMediasWWW where  exptID like \'{exptID}\' "
+    sql = f"SELECT i.id,  i.is_reviewed , i.file_location , i.is_www , i.person_id , p.given_name, p.family_name, i.caption, i.description, i.height, i.width, i.orientation, i.experiment_code, i.image_type FROM images i JOIN persons p on i.person_id = p.id where  experiment_code like \'{exptID}\' "
+    #sql = f"Select * from qsMediasWWW where  exptID like \'{exptID}\' "
     print(sql)
     cur.execute(sql)
     results = cur.fetchall()  
@@ -94,7 +114,8 @@ def getImages(exptID = 'rothamsted'):
 
 
 def getAllImages():
-    cur = getCursor()
+    cnx = _connect.connect()
+    cur = cnx.cursor()
     images = []
     
 #
@@ -107,7 +128,7 @@ def getAllImages():
 
 
     #sql = f"Select * from qsMediasWWW "
-    sql = f"Select * from Media "
+    sql = f"Select * from images "
     print(sql)
     cur.execute(sql)
     results = cur.fetchall()  

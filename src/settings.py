@@ -19,8 +19,10 @@ EXPERIMENTS: list experiment that need a folder but have no GLTENID
 #ROOT    = config['STAGE']['ROOT']
 #STAGE   = config['STAGE']['STAGE'] 
 #REPO    = config['STAGE']['REPO']
-STAGE = "d:/eRAWebStage/eRAstage27/" 
-REPO = "d:/eRAWebRepo/repo07/"
+
+
+STAGE = "d:/eRAWebStage/eRAsandpit01/" 
+REPO = "d:/eRAWebRepo/repo08/"
 ROOT = "http://local-info.rothamsted.ac.uk/eRA/era2021/"
 INTRA = 'P://era2018-new/'
 
