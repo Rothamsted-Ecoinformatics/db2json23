@@ -36,11 +36,10 @@ class Expt:
     
     """
     def __init__(self, row):      
-        self.experiment_name = row.experiment_name
-        self.KeyRefCode = row.KeyRefCode
-        self.type = row.exptType 
-        self.exptID = row.experiment_code 
-        self.folder =  ''.join(ch for ch in row.experiment_code if ch.isalnum()).lower()
+        self.experiment_name = row.name
+        self.KeyRefCode = row.key_ref_code
+        self.exptID = row.code 
+        self.folder =  ''.join(ch for ch in row.code if ch.isalnum()).lower()
         self.station = self.folder[0]
         
     def asExptJson(self):
@@ -53,7 +52,6 @@ class Expt:
               "Experiment": self.experiment_name,
               "KeyRefCode": self.KeyRefCode,
               "KeyRef": self.KeyRefCode,
-              "type": self.type,
               "exptID": self.folder,
               "expt_Code": self.exptID,
               "ExptFolder": self.folder,
@@ -88,7 +86,7 @@ def getExperiments():
     cnx = _connect.connect()
     cur = cnx.cursor()
 
-    sql = f'Select * from experiment where GLTENID > 0 order by experiment_name '
+    sql = f'Select * from experiments where glten_id > 0 order by name '
     cur.execute(sql)
     results = cur.fetchall() 
 
