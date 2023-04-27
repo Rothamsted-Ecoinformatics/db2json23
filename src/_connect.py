@@ -18,9 +18,9 @@ import collections
 def connect():
  
     #con = pymysql.connect(host = host,user=user,password=pwd,db=db,cursorclass=pymysql.cursors.DictCursor) 
-    dsn='Burdock-cdera'
-    uid='cdm'
-    pwd='master10'    
+    dsn='burdock-eraSandpit'
+    uid='trampolines'
+    pwd='Ad0rnSp4d3'    
     con  = pyodbc.connect('DSN='+dsn+';uid='+uid+';pwd='+pwd)
     
     #con = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=C:\Users\castells\Rothamsted Research\e-RA - Documents\datacite\DataCite Metadata database.accdb;')
@@ -50,11 +50,11 @@ def getCursor():
 if __name__ == '__main__':
     cnx = connect() 
     cur = cnx.cursor()
-    cur.execute("""select title, URL  from metadata_document""")
+    cur.execute("""select title, url  from metadata_documents""")
     results = cur.fetchall()  
     # Declaring namedtuple()   
     for row in results:      
-        print ('\nTitle = '  + row.title + '\nURL   = '+row.URL)
+        print ('\nTitle = '  + row.title + '\nURL   = '+row.url)
 
     print (results)
    

@@ -1,10 +1,9 @@
-"""@package prep.py
-Created on 11 June 2019
+"""@package AFolder.py
+Created 2023-04-27
 
 @author: castells
-@description: Prepare the staging area. 
+@description: 
 
-Define your staging main folder in settings.py 
 When this is ran, it prepares a staging area with all the folders for each experiment. 
 It also prepares the experiments.json file and places it in the default directory.
 
@@ -22,7 +21,6 @@ I am not sure metdata is experiment.
 
 """
 
-
 import json
 
 import os
@@ -33,15 +31,16 @@ import _connect
 
 class Expt:
     """The class that will define an experiment and we can use that to make the folder. The row is the result of a query in the table
-    
+    SELECT id, field_id, code, name, start_year, end_year, glten_id, key_ref_code, purpose, description, folder
+    FROM eraSandpit.dbo.experiments;
+
     
     """
     def __init__(self, row):      
-        self.experiment_name = row.experiment_name
-        self.KeyRefCode = row.KeyRefCode
-        self.type = row.exptType 
-        self.exptID = row.experiment_code 
-        self.folder =  ''.join(ch for ch in row.experiment_code if ch.isalnum()).lower()
+        self.experiment_name = row.name
+        self.KeyRefCode = row.key_ref_code
+        self.exptID = row.code 
+        self.folder =  ''.join(ch for ch in row.code if ch.isalnum()).lower()
         self.station = self.folder[0]
         
     def asExptJson(self):
@@ -53,7 +52,6 @@ class Expt:
         expt =  {
               "Experiment": self.experiment_name,
               "KeyRefCode": self.KeyRefCode,
-              "type": self.type,
               "exptID": self.folder,
               "expt_Code": self.exptID,
               "ExptFolder": self.folder,
@@ -79,16 +77,15 @@ class Expt:
 def getExperiments():
     """This gets the experiments. We only need experiments and farms
     
-    SELECT Experiments.[Expt-Code], Experiments.Experiment, Experiments.KeyRefCode, Experiments.type, Experiments.[exp-ID]
-    FROM Experiments
-    WHERE ((Not (Experiments.type)="Other"))
-    ORDER BY Experiments.Experiment;
+    SELECT id, field_id, code, name, start_year, end_year, glten_id, key_ref_code, purpose, description, folder
+    FROM eraSandpit.dbo.experiments;
+
 
     """
     cnx = _connect.connect()
     cur = cnx.cursor()
 
-    sql = f'Select * from experiment where GLTENID > 0 order by experiment_name '
+    sql = f'Select * from experiments where glten_id > 0 order by name '
     cur.execute(sql)
     results = cur.fetchall() 
 
@@ -131,7 +128,7 @@ def makedirectories(results):
     testString = ""
     default = "metadata/default/"
     stations = ["default", "rothamsted", "broomsbarn", "woburn", "saxmundham"]
-    experiments =  [ "met", "rms", "bms", "wms", "sms", "rro", "rrn2"]
+    experiments =  [ "met", "rms", "bms", "wms", "sms", "rro"]
     
 
     
@@ -185,13 +182,13 @@ if __name__ == '__main__':
     #config.read('config.ini')
  
 
-    stage = "d:/eRAWebStage/eRAstage27/" 
-    repo = "d:/eRAWebRepo/repo07/"
+    stage = "d:/eRAWebStage/eRAsandpit01/" 
+    repo = "d:/eRAWebRepo/repo08/"
     #stage = config['STAGE']['STAGE']
     #repo = config['STAGE']['REPO']
     status = " created"
-    newDir = stage+'includes'
-    defaultdir = stage+'metadata/default/'
+    #newDir = stage+'includes'
+    newDir = stage+'metadata/default/'
     if not os.path.isdir(newDir):
         os.makedirs(newDir,  exist_ok = True)
         os.chmod(newDir, stat.S_IRWXO)
