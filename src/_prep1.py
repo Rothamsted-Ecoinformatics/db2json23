@@ -26,22 +26,20 @@ class APIError(Exception):
 
 
 def getGLTENIDs():
-    """
-    Returns a dictionary with all the timelines. This is then printed to offer use the choice
-    """
+   
     cnx = _connect.connect()
     cur = cnx.cursor()
     GLTENIDs = []
-    sql = 'SELECT  experiment_name, experiment_code,  GLTENID, KeyRefCode FROM experiment where GLTENID is not null order by experiment_name;'
+    sql = 'SELECT  name, code,  glten_id, key_ref_code FROM experiments where glten_id is not null order by name;'
     cur.execute(sql)
     results = cur.fetchall()  
 
     for row in results: 
         GLTENIDs.append(dict(
-                experiment_name = row.experiment_name,
-                folder = row.experiment_code.replace('/','').lower(),
-                GLTENID = row.GLTENID, 
-                KeyRef = row.KeyRefCode
+                experiment_name = row.name,
+                folder = row.code.replace('/','').lower(),
+                GLTENID = row.glten_id, 
+                KeyRef = row.key_ref_code
                 ))
            
     return GLTENIDs
