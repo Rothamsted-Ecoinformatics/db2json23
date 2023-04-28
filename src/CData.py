@@ -80,19 +80,20 @@ def allDatasets():
     cur = cnx.cursor()
     lsAllDatasets =  []
     sql = ''
-    #sql = 'select * from viewMetaDocument  where grt_value = \'Dataset\' and  isReady >= 1 order by  title asc'
+    sql = 'select * from vw_metadata_documents  where grt_value = \'Dataset\' and  is_ready >= 1 order by  title asc'
     
-    sql =       'SELECT m.id as md_id, title, url, identifier, identifier_type, dataset_type as dstype, grt.type_value  as grt_value, '
-    sql = sql + ' srt.type_value  as dataset_type,  document_format_id, description_abstract, e.field_id, f.name as fieldname,'
-    sql = sql + ' e.name as experiment_name, e.code  as experiment_code, publication_year, short_name, publisher_id, is_ready, '
-    sql = sql + ' is_external, o.name as publisher, version,  lang,  grade, is_external,  doi_created'
-    sql = sql + ' FROM metadata_documents m'
-    sql = sql + ' join experiments e on m.experiment_id = e.id'
-    sql = sql + ' join fields f on e.field_id = f.id'
-    sql = sql + ' join organisations o on o.id = m.publisher_id'
-    sql = sql + ' join general_resource_types grt on grt.id = m.general_resource_type_id '
-    sql = sql + ' join specific_resource_types srt on srt.id = m.specific_resource_type_id'
-    sql = sql + ' where grt.type_value = \'Dataset\' and  is_ready  >= 1 order by  title asc'
+    # sql =       'SELECT m.id as md_id, title, url, identifier, identifier_type, dataset_type as dstype, grt.type_value  as grt_value, '
+    # sql = sql + ' srt.type_value  as dataset_type,  document_format_id, description_abstract, e.field_id, f.name as fieldname,'
+    # sql = sql + ' e.name as experiment_name, e.code  as experiment_code, publication_year, short_name, publisher_id, is_ready, '
+    # sql = sql + ' is_external, o.name as publisher, version,  lang,  grade, is_external,  doi_created'
+    # sql = sql + ' FROM metadata_documents m'
+    # sql = sql + ' join experiments e on m.experiment_id = e.id'
+    # sql = sql + ' join fields f on e.field_id = f.id'
+    # sql = sql + ' join organisations o on o.id = m.publisher_id'
+    # sql = sql + ' join general_resource_types grt on grt.id = m.general_resource_type_id '
+    # sql = sql + ' join specific_resource_types srt on srt.id = m.specific_resource_type_id'
+    # sql = sql + ' where grt.type_value = \'Dataset\' and  is_ready  >= 1 order by  title asc'
+    print("debug CData ln 96")
     print(sql)
     cur.execute(sql)
     results = cur.fetchall()  
@@ -118,37 +119,31 @@ def getDatasets(typeOfDoc = 'Dataset', expt_code = 'R/BK/1'):
     cur = cnx.cursor()
     lsDatasets =  []
     
-    # sql = 'select * from viewMetaDocument  where grt_value = \'{}\' and  experiment_code = \'{}\' order by grade desc, title asc'.format(typeOfDoc, expt_code)
-    sql =       'SELECT m.id as md_id, title, url, identifier, identifier_type, dataset_type as dstype, grt.type_value  as grt_value, '
-    sql = sql + ' srt.type_value  as dataset_type,  document_format_id, description_abstract, e.field_id, f.name as fieldname,'
-    sql = sql + ' e.name as experiment_name, e.code  as experiment_code, publication_year, short_name, publisher_id, is_ready, '
-    sql = sql + ' is_external, o.name as publisher, version,  lang,  grade, is_external,  doi_created'
-    sql = sql + ' FROM metadata_documents m'
-    sql = sql + ' join experiments e on m.experiment_id = e.id'
-    sql = sql + ' join fields f on e.field_id = f.id'
-    sql = sql + ' join organisations o on o.id = m.publisher_id'
-    sql = sql + ' join general_resource_types grt on grt.id = m.general_resource_type_id '
-    sql = sql + ' join specific_resource_types srt on srt.id = m.specific_resource_type_id'
-    sql = sql + ' where grt.type_value = \'{}\' and  e.code = \'{}\' and is_ready  >= 1 order by  title asc'
-    sql = sql.format(typeOfDoc, expt_code)
-    print(sql)
+    sql = 'select * from vw_metadata_documents  where grt_value = \'{}\' and  experiment_code = \'{}\' order by grade desc, title asc'.format(typeOfDoc, expt_code)
+    #print("debug _metadata 122")
+    #print(sql)
     cur.execute(sql)
-    results = cur.fetchall()  
+    results = cur.fetchall() 
+
     for row in results: 
         dt = Dataset(row)        
         lsDatasets.append(dt.asdatasetJson()) 
         _metadata.makeDocumentInfo(str(dt.md_id)) 
+    print(lsDatasets)
     return lsDatasets
 
 
 def makeDatasetList(typeOfDoc,expt_code):
     
     lsDatasets = getDatasets(typeOfDoc,expt_code)
+    #debug _metadata 137
+    print(lsDatasets)
     folder = ''.join(ch for ch in expt_code if ch.isalnum()).lower()
     xname = settings.STAGE+ "metadata/"+str(folder)+"/"+typeOfDoc.lower()+"s.json"
     fxname = open(xname,'w+')
     strDatasets =  json.dumps(lsDatasets, indent=4)
-    print (strDatasets)
+    #debug _metadata 143
+    print(strDatasets)
     fxname.write(strDatasets)
     fxname.close()
     print('list of '+typeOfDoc+' saved in '+xname)
@@ -159,14 +154,17 @@ def getExptCodes(typeOfDoc):
     expts_codes = []
     cnx = _connect.connect()
     cur = cnx.cursor()
-    #sql = 'select distinct experiment_code from metadata_documents where grt_value like \'{}\' order by experiment_code'.format(typeOfDoc)
-    sql = ''
-    sql = sql + ' select DISTINCT e.code code '
-    sql = sql + ' from metadata_documents md join experiments e on md.experiment_id = e.id'
-    sql = sql + ' join general_resource_types grt on md.general_resource_type_id = grt.id'
-    sql = sql + ' where grt.type_value like \'{}\''
-    sql = sql + ' order by code'
-    sql = sql.format(typeOfDoc)
+    sql = """select distinct e.code code
+    from metadata_documents md join experiments e on md.experiment_id = e.id
+    join general_resource_types grt on md.general_resource_type_id = grt.id
+    where grt.type_value  like \'{}\' order by code""".format(typeOfDoc)
+    # sql = ''
+    # sql = sql + ' select DISTINCT e.code code '
+    # sql = sql + ' from metadata_documents md join experiments e on md.experiment_id = e.id'
+    # sql = sql + ' join general_resource_types grt on md.general_resource_type_id = grt.id'
+    # sql = sql + ' where grt.type_value like \'{}\''
+    # sql = sql + ' order by code'
+    # sql = sql.format(typeOfDoc)
 
     cur.execute(sql)
     results = cur.fetchall()  
@@ -225,7 +223,6 @@ if __name__ == '__main__':
                         inToken = inToken - 1
                         exptCode = exptCodes[inToken]
                         print (exptCode)
-                        
                         makeDatasetList(typeOfDoc,exptCode)
                         
                     else:

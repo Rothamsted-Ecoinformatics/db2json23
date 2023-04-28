@@ -21,21 +21,20 @@ import _connect
 
 
 class DocumentInfo:
-    
+    print("debug _metadata ln 24: doing DocumentInfo")
     def __init__(self):
-        """
-tract 
-        """
+        
         self.url = None
         self.mdId = None
         self.data = {} # Changed declaration from NoneType to void non-subscriptable warnings
         self.folder = None
         self.sDOI = None
 
-        
-        
+ 
         
 class Person:
+    
+    # checked for eraSandpit: 2023-04-28
     def __init__(self, row):
         self.familyName = row.family_name
         self.givenName = row.given_name 
@@ -51,6 +50,8 @@ class Person:
         self.fullname = self.givenName + " " + self.familyName
         if hasattr(row,'type_value'):
             self.contributorType = row.type_value
+            print("debug _metadata ln 53 - Person")
+            print(row.type_value)
         self.nameIdentifiers = None
         if not self.nameIdentifier is None:
             self.nameIdentifiers = [
@@ -60,6 +61,8 @@ class Person:
                     "schemeURI": self.schemeUri 
                 }
             ]
+        print("debug _metadata ln 64 - Person")
+        print(self.nameIdentifiers)
         self.affiliation = dict(type="Organization", name= self.organisationName,  address= self.formatAddress())
         
         
@@ -75,8 +78,10 @@ class Person:
             address = address + ", " + self.postalCode
         if not self.country is None:
             address = address + ", " + self.country
+        print("debug _metadata ln 81 - Person")
+        print(address)
         return address
-#        
+        
     def asCreatorJson(self):
         dictaddress = dict(type="PostalAddress", streetAddress= self.organisationName, addressLocality= self.locality, addressRegion = self.region, postalCode= self.postalCode, addressCountry=self.country   )
         creator = dict(type = 'Person', Name = self.fullname,givenName = self.givenName,familyName = self.familyName, sameAs = self.nameIdentifier,address = dictaddress )
@@ -94,145 +99,103 @@ class Person:
 
 
 def getDocumentMetadata(mdId):
-    """ SELECT m.id as md_id, 
-title, 
-url,
-identifier, 
-identifier_type, 
-dataset_type as dstype,
-grt.type_value  as grt_value, 
-srt.type_value  as dataset_type,  
-srt.type_value  as srt_value,
-document_format_id,
-e.field_id,
-f.name as fieldname,
-f.geo_point_latitude, 
-f.geo_point_longitude, 
-e.name as experiment_name, 
-e.code  as experiment_code,
-publication_year,
-short_name,
-publisher_id, 
-is_ready,
-o.name as publisher, 
-version, 
-lang,  
-grade, 
-is_external,
-description_abstract,
-description_methods,
-description_toc,
-description_technical_info,
-description_quality,
-description_provenance,
-description_other,
-doi_created,
-document_format_id as extension, 
-rights_text, 
-rights_licence_uri, 
-rights_licence
-FROM metadata_documents m
-join experiments e on m.experiment_id = e.id 
-join fields f on e.field_id = f.id 
-join organisations o on o.id = m.publisher_id
-join general_resource_types grt on grt.id = m.general_resource_type_id 
-join specific_resource_types srt on srt.id = m.specific_resource_type_id ;
-encapsulted in a view
-    
-    
-    
-    
-    """
-    
+      
     cnx = _connect.connect()
-    cur = cnx.cursor()
-    
-    cur.execute("""select * from vw_metadata_documents  where md_id = ? order by grade DESC, title ASC""", mdId)
+    cur = cnx.cursor() 
+    cur.execute("""select * from vw_metadata_documents  where md_id = ?""", mdId)
     return cur
-
-# def prepareCreators_new(mdId):
-#     cnx = _connect.connect()
-#     cur = cnx.cursor()
-#     creators = ""
-#     # First prepare named people
-#     cur.execute('select p.family_name, p.given_name, p.name_identifier, p.name_identifier_scheme, p.scheme_uri, o.organisation_name, o.street_address, o.address_locality, o.address_region, o.address_country, o.postal_code from (person p inner join person_creator pc on p.person_id = pc.person_id) inner join organisation o on p.affiliation = o.organisation_id where pc.md_id = ?', mdId)
-#     
-#     results = cur.fetchall()    
-#     for row in results: 
-#         person = Person(row)  
-#      
-#         creators.append(person.asCreatorJson())
-#            
-#     # second prepare organisations
-#     cur.execute('select * from organisation o inner join organisation_creator oc on o.organisation_id = oc.organisation_id where oc.md_id = ?',mdId)
-#     results = cur.fetchall()
-#     for row in results:
-#      
-#         creators.append({"creatorName": row.organisation_name}) 
-#         
-#     return creators 
+ 
    
 def prepareCreators(mdId):
+    print("debug _metadata ln 174: doing prepareCreators")
     cnx = _connect.connect()
     cur = cnx.cursor()
     creators = []
     # First prepare named people
     # corrected for 2023
-    cur.execute('select p.family_name, p.given_name, p.name_identifier, p.name_identifier_scheme, p.scheme_uri, o.name, o.street_address, o.address_locality, o.address_region, o.address_country, o.postal_code from (persons p inner join person_creators pc on p.id = pc.person_id) inner join organisations o on p.organisation_id = o.id where pc.metadata_document_id  = ?', mdId)
+    # sql = 'select p.family_name, p.given_name, p.name_identifier, p.name_identifier_scheme, p.scheme_uri, o.name, o.street_address, o.address_locality, o.address_region, o.address_country, o.postal_code from (persons p inner join person_creators pc on p.id = pc.person_id) inner join organisations o on p.organisation_id = o.id where pc.metadata_document_id  = ?', mdId
+    cur.execute("""select p.family_name, p.given_name, p.name_identifier, 
+                p.name_identifier_scheme, p.scheme_uri, o.name, o.street_address, 
+                o.address_locality, o.address_region, o.address_country, o.postal_code 
+                from (persons p inner join person_creators pc on p.id = pc.person_id) 
+                inner join organisations o on p.organisation_id = o.id 
+                where pc.metadata_document_id  = ?""", mdId)
     
-    results = cur.fetchall()    
-    for row in results: 
-        person = Person(row)  
+    results = cur.fetchall() 
      
+    for row in results: 
+        # print("debug _metadata ln193")
+        # print(row)
+        person = Person(row)  
+        # print("debug _metadata ln 197")
+        # print(person.asCreatorJson())
         creators.append(person.asCreatorJson())
-           
+        
     # second prepare organisations
      # corrected for 2023
-    cur.execute('select * from organisations o inner join organisation_creators oc on o.id = oc.organisation_id where oc.metadata_document_id  = 70 ?',mdId)
+    cur.execute("""select * 
+                from organisations o 
+                inner join organisation_creators oc on o.id = oc.organisation_id 
+                where oc.metadata_document_id  =  ?""",mdId)
     results = cur.fetchall()
+    
     for row in results:
-     
+        # print("debug _metadata ln208")
+        # print(row)
         creators.append({"type": "organization", "name": row.name}) 
         
     return creators
 
 def prepareContributors(mdId):
+    print("debug _metadata ln 214: doing prepareContributors")
     cnx = _connect.connect()
     cur = cnx.cursor()
     contributors = [] 
     # First prepare named people
-    cur.execute("""select p.family_name, p.given_name, p.name_identifier, p.name_identifier_scheme, p.scheme_uri, o.organisation_name, o.street_address, o.address_locality, o.address_region, o.address_country, o.postal_code, prt.type_value 
-        from ((person p 
-        inner join organisation o on p.affiliation = o.organisation_id) 
-        inner join person_role pr on p.person_id = pr.person_id)
-        inner join person_role_types prt on pr.prt_id = prt.prt_id
-        where pr.md_id = ?""", mdId)
+    # corrected for db2json23 2023-04-28
+    cur.execute("""select p.family_name, p.given_name, p.name_identifier, 
+                p.name_identifier_scheme, p.scheme_uri, o.name, o.street_address, 
+                o.address_locality, o.address_region, o.address_country, o.postal_code, 
+                prt.type_value from ((persons p inner join organisations o on p.organisation_id = o.id) 
+                inner join person_roles pr on p.id = pr.person_id) 
+                inner join person_role_types prt on pr.person_role_type_id = prt.id 
+                where pr.metadata_document_id = ?""", mdId)
     
     results = cur.fetchall()    
     for row in results: 
-        person = Person(row)        
+        print("debug _metadata ln 232")
+        print(row) 
+        person = Person(row)
+               
         contributors.append(person.asContributorJson())
     # second prepare organisations
-    cur.execute("""select o.organisation_name, ort.type_value 
-        from (organisation o 
-        inner join organisation_role r on o.organisation_id = r.organisation_id) 
-        inner join organisation_role_types ort on r.ort_id = ort.ort_id
-        where r.md_id = ?""",mdId)
+    # corrected for db2json23 2023-04-28
+    cur.execute("""select distinct
+	                o.name,
+	                oc.metadata_document_id 
+                from
+	                (organisations o
+                    inner join organisation_creators oc  on
+	                o.id = oc.organisation_id)
+                where oc.metadata_document_id = ?""",mdId)
     results = cur.fetchall()
     for row in results:
-        contributors.append({"sourceOrganisation": row.organisation_name}) 
+        print("debug _metadata ln 244: ")
+        contributors.append({"sourceOrganisation": row.name}) 
         
     return contributors    
     
 def prepareSubjects(mdId):
+    print("debug _metadata ln 214: doing prepareSubjects")
     cnx = _connect.connect()
     cur = cnx.cursor()
     subjects = []
-    cur.execute("""select s.subject, s.subject_uri, ss.subject_schema, ss.schema_uri
-        from (subjects s
-        inner join subject_schemas ss on s.ss_id = ss.ss_id)
-        inner join document_subjects ds on s.subject_id = ds.subject_id 
-        where ds.md_id = ?""", mdId)
+    # updated for db2json23 2023-04-28
+    cur.execute("""select s.subject, s.uri, ss.name, ss.abbreviation, ss.uri 
+                from (subjects s 
+                inner join subject_schemas ss on s.subject_schemas_id = ss.id) 
+                inner join document_subjects ds on s.id = ds.subject_id 
+                where ds.metadata_document_id = ?""", mdId)
     results = cur.fetchall()    
     for row in results: 
         subjects.append(row.subject)
@@ -240,28 +203,33 @@ def prepareSubjects(mdId):
     return subjects
     
 def prepareDescriptions(row):
+    print("debug _metadata ln 267: doing prepareDescriptions")
     descriptions = []
-    
-    descriptions.append({'inLanguage' : row.language, 'descriptionType' : 'Abstract', 'description' : row.description_abstract})
+    # checked 2023-04-28 for db2json23
+    descriptions.append({'inLanguage' : row.lang, 'descriptionType' : 'Abstract', 'description' : row.description_abstract})
     if not row.description_methods is None:
-        descriptions.append({'inLanguage' : row.language, 'descriptionType' : 'Methods', 'description' : row.description_methods})
+        descriptions.append({'inLanguage' : row.lang, 'descriptionType' : 'Methods', 'description' : row.description_methods})
     if not row.description_toc is None:
-        descriptions.append({'inLanguage' : row.language, 'descriptionType' : 'TableOfContents', 'description' : row.description_toc})
+        descriptions.append({'inLanguage' : row.lang, 'descriptionType' : 'TableOfContents', 'description' : row.description_toc})
     if not row.description_technical_info is None:
-        descriptions.append({'inLanguage' : row.language, 'descriptionType' : 'TechnicalInfo', 'description' : row.description_technical_info})
+        descriptions.append({'inLanguage' : row.lang, 'descriptionType' : 'TechnicalInfo', 'description' : row.description_technical_info})
     if not row.description_other is None:
-        descriptions.append({'inLanguage' : row.language, 'descriptionType' : 'Other', 'description' : str(row.description_other)})
+        descriptions.append({'inLanguage' : row.lang, 'descriptionType' : 'Other', 'description' : str(row.description_other)})
     if not row.description_provenance is None :
-        descriptions.append({'inLanguage' : row.language, 'descriptionType' : 'Provenance', 'description' : str(row.description_provenance) })
+        descriptions.append({'inLanguage' : row.lang, 'descriptionType' : 'Provenance', 'description' : str(row.description_provenance) })
     if not row.description_quality is None :
-        descriptions.append({'inLanguage' : row.language, 'descriptionType' : 'Quality', 'description' :  str(row.description_quality) })
+        descriptions.append({'inLanguage' : row.lang, 'descriptionType' : 'Quality', 'description' :  str(row.description_quality) })
 
     return descriptions
 
 def prepareDateCreated(mdId):
     cnx = _connect.connect()
     cur = cnx.cursor()
-    cur.execute("""select dt.type_value, dd.document_date from document_dates dd inner join date_types dt on dd.dt_id = dt.dt_id where dd.md_id = ?""", mdId)
+    # corrected 2023-04-28 for db2json23
+    cur.execute("""select dt.type_value , dd.document_date  
+        from document_dates dd 
+        inner join date_types dt on dd.date_type_id  = dt.id 
+        where dd.metadata_document_id  = ?""", mdId)
     
     results = cur.fetchall()    
     for row in results: 
@@ -271,7 +239,11 @@ def prepareDateCreated(mdId):
 def prepareDateAvailable(mdId):
     cnx = _connect.connect()
     cur = cnx.cursor()
-    cur.execute("""select dt.type_value, dd.document_date from document_dates dd inner join date_types dt on dd.dt_id = dt.dt_id where dd.md_id = ?""", mdId)
+    # corrected 2023-04-28 for db2json23
+    cur.execute("""select dt.type_value , dd.document_date  
+        from document_dates dd 
+        inner join date_types dt on dd.date_type_id  = dt.id 
+        where dd.metadata_document_id  = ?""", mdId)
     
     results = cur.fetchall()    
     for row in results: 
@@ -282,7 +254,11 @@ def prepareDateAvailable(mdId):
 def prepareDateModified(mdId):
     cnx = _connect.connect()
     cur = cnx.cursor()
-    cur.execute("""select dt.type_value, dd.document_date from document_dates dd inner join date_types dt on dd.dt_id = dt.dt_id where dd.md_id = ?""", mdId)
+    # corrected 2023-04-28 for db2json23
+    cur.execute("""select dt.type_value , dd.document_date  
+        from document_dates dd 
+        inner join date_types dt on dd.date_type_id  = dt.id 
+        where dd.metadata_document_id  = ?""", mdId)
     
     results = cur.fetchall()    
     for row in results: 
@@ -290,6 +266,7 @@ def prepareDateModified(mdId):
             return row.document_date.strftime('%Y-%m-%d')  
         
 def getInfo(database_identifier):
+    print("debug _metadata ln 330: doing database_identifier")
     '''This function looks for a URL or DOI in the document table and returns its title if it is there'''
     cnx = _connect.connect()
     cur = cnx.cursor()
@@ -308,21 +285,29 @@ def getInfo(database_identifier):
    
 
 def prepareRelatedIdentifiers(mdId):
+    print("debug _metadata ln 350: doing prepareRelatedIdentifiers")
     cnx = _connect.connect()
     cur = cnx.cursor()
     related_identifiers = []
-    cur.execute("""select ri.related_identifier, ri.ri_name as ri_name, i.type_value as identifier_type, r.rt_desc as type_description, ri.rt_id as rtID, r.type_value as relation_type
-        from (related_identifiers ri
-        inner join identifier_types i on ri.it_id = i.it_id)
-        inner join relation_types r on ri.rt_id = r.rt_id
-        where ri.md_id = ?""", mdId)
+    cur.execute("""select
+	ri.identifier,
+	ri.name as ri_name,
+	ri.identifier_type_id  as identifier_type,
+	r.display_value  as type_description,
+	ri.relation_type_id  as rtID,
+	r.type_value as relation_type
+from
+	related_identifiers ri
+inner join relation_types r on
+	ri.relation_type_id  = r.id
+where
+	ri.metadata_document_id = ?""", mdId)
     
     results = cur.fetchall() 
     ri_name_v = ''
     ri_type_v = 'Text'  
-    for row in results: 
-        
-        RI_info = getInfo(row.related_identifier)
+    for row in results:   
+        RI_info = getInfo(row.identifier)
         if RI_info['title'] != 'NONE':
             ri_name_v =  RI_info['title']
             ri_type_v = RI_info['grt_value']
@@ -330,11 +315,8 @@ def prepareRelatedIdentifiers(mdId):
             ri_name_v =  row.ri_name
             ri_type_v = 'Text'
             
-    
-         
-       
         related_identifiers.append({
-            'relatedIdentifier': row.related_identifier,
+            'relatedIdentifier': row.identifier,
             'relatedIdentifierType' : row.identifier_type, 
             'name': ri_name_v,
             'relatedIdentifierGeneralType': ri_type_v,
@@ -349,8 +331,10 @@ def prepareSizes(mdId):
     cnx = _connect.connect()
     cur = cnx.cursor()
     sizes = []
-    cur.execute("""select u.unit_short_name, ds.size_value
-        from document_sizes ds inner join measurement_unit u on ds.unit_id = u.unit_id where ds.md_id = ?""", mdId)
+    # checked and corrected  2023-04-28
+    cur.execute("""select  du.name, df.size_value  
+        from document_files df  inner join document_units du  on du.id  = df.document_unit_id  
+        where df.metadata_document_id  = ?""", mdId)
     
     results = cur.fetchall()    
     for row in results: 
@@ -365,21 +349,32 @@ def prepareFundingReferences(mdId):
     cnx = _connect.connect()
     cur = cnx.cursor()
     fundingreferences = []
-    cur.execute("""select fa.award_number, fa.award_uri, fa.award_title,fb.organisation_name, fb.funder_identifier, fb.funder_identifier_type
-        from (document_funding df
-        inner join funding_awards fa on df.fa_id = fa.fa_id)
-        inner join organisation fb on fa.organisation_id = fb.organisation_id
-        where df.md_id = ?""", mdId)
+    # checked and  corrected 2023-04-28
+    cur.execute("""    select
+	fa.reference_number ,
+	fa.uri ,
+	fa.title,
+	o.name,
+	o.funder_identifier,
+	o.funder_identifier_type
+from
+	(document_funders df
+inner join funding_awards fa on
+	df.funding_award_id  = fa.id)
+inner join organisations o on
+	fa.organisation_id = o.id
+where
+	df.metadata_document_id  = ?""", mdId)
 
     results = cur.fetchall()
     for row in results:
         fundingreferences.append(
            {
                "type": "organization",
-               "name": row.organisation_name,
+               "name": row.name,
                "sameAs": row.funder_identifier,
-               "award":  row.award_number + ' - ' + row.award_title,
-               "identifier": row.award_uri
+               "award":  row.reference_number + ' - ' + row.title,
+               "identifier": row.uri
             }
         )
         
@@ -389,26 +384,37 @@ def prepareDistribution(mdId):
     cnx = _connect.connect()
     cur = cnx.cursor()
     distribution = []
-    
-    rows_count = cur.execute("""SELECT ds_id, md_id, unit_short_name, size_value, location, file_name         
-        FROM document_sizes ds left join measurement_unit as mu on ds.unit_id = mu.unit_id
-        where isIllustration = 0 and ds.md_id = ?""", mdId)
+    # checked and  corrected 2023-04-28  
+    rows_count = cur.execute("""SELECT
+	df.id,
+	df.metadata_document_id ,
+	du.name ,
+	df.size_value,
+	df.file_name,
+	df.title 
+FROM
+	document_files df 
+left join document_units du  on
+	df.document_unit_id  = du.id 
+where
+	df.is_illustration  = 0
+	and df.metadata_document_id  = ?""", mdId)
 
     try:
         results = cur.fetchall()
         for row in results:
             
-            fileName = row.location
+            fileName = row.file_name
             if fileName:
                 fileParts = fileName.split(".")
                 encodingFormat = fileParts[-1]
                 distribution.append(
                 {
                     "type": "dataDownload",
-                    "name": row.file_name,
+                    "name": row.title,
                     "URL": fileName,
                     "encodingFormat":  encodingFormat,
-                    "fileSize": str(row.size_value) + ' ' + row.unit_short_name
+                    "fileSize": str(row.size_value) + ' ' + row.name
                 }
                 )  
             else:
@@ -418,20 +424,32 @@ def prepareDistribution(mdId):
         distribution = []
     return distribution
 
+
 def prepareIllustration(mdId):
     cnx = _connect.connect()
     cur = cnx.cursor()
     illustration = []
-    
-    rows_count = cur.execute("""SELECT ds_id, md_id, unit_short_name, size_value, location, file_name         
-        FROM document_sizes ds left join measurement_unit as mu on ds.unit_id = mu.unit_id
-        where isIllustration = 1 and ds.md_id = ?""", mdId)
+    # checked and  corrected 2023-04-28
+    rows_count = cur.execute("""SELECT
+	df.id,
+	df.metadata_document_id ,
+	du.name ,
+	df.size_value,
+	df.file_name,
+	df.title 
+FROM
+	document_files df 
+left join document_units du  on
+	df.document_unit_id  = du.id 
+where
+	df.is_illustration  = 1 
+	and df.metadata_document_id  = ?""", mdId)
 
     try:
         results = cur.fetchall()
         for row in results:
             
-            fileName = row.location
+            fileName = row.file_name
             if fileName:
                 fileParts = fileName.split(".")
                 encodingFormat = fileParts[-1]
@@ -440,10 +458,10 @@ def prepareIllustration(mdId):
             illustration.append(
                 {
                     "type": "imageObject",
-                    "caption": row.file_name,
+                    "caption": row.title,
                     "URL": fileName,
                     "encodingFormat":  encodingFormat,
-                    "fileSize": str(row.size_value) + ' ' + row.unit_short_name
+                    "fileSize": str(row.size_value) + ' ' + row.name
                 }
                 )  
     except TypeError:
@@ -451,6 +469,7 @@ def prepareIllustration(mdId):
     return illustration
 
 def process(documentInfo):
+    print("debug _metadata ln 174: doing process")
     mdId = documentInfo.mdId
     mdCursor = getDocumentMetadata(mdId)
     mdRow = mdCursor.fetchone()
@@ -488,47 +507,48 @@ def process(documentInfo):
             'dateCreated' : prepareDateCreated(mdId),
             'dateModified' : prepareDateModified(mdId),
             'datePublished' : prepareDateAvailable(mdId),
-            'inLanguage' : mdRow.language,  
+            'inLanguage' : mdRow.lang,  
             'version' : str(mdRow.version), 
             'keywords' : prepareSubjects(mdId),
             'creator' : prepareCreators(mdId),
             'contributor' : prepareContributors(mdId),
-            'encodingFormat' : mdRow.mime_type,
+            'encodingFormat' : mdRow.document_format_id,
             'copyrightHolder' : {
                 "type": "organization",
                 "name": mdRow.publisher
                 },
             'license':  {
-                "type": "CreativeWork",
-                "name": "Attribution 4.0 International (CC BY 4.0)",
-                "license": mdRow.rights_licence_uri,
-                "text": mdRow.rights_licence
-                },
+                 "type": "CreativeWork",
+                 "name": "Attribution 4.0 International (CC BY 4.0)",
+                 "license": mdRow.rights_licence_uri,
+                 "text": mdRow.rights_licence
+                 },
             'spatialCoverage': 
                 {
                     'type': 'place',
-                    'geo' : {
-                        'type':'GeoCoordinates',
-                        'longitude': float(mdRow.geo_point_longitude),
-                        'latitude': float(mdRow.geo_point_latitude)
-                    },
-                    'name': mdRow.fieldname            
-                },
-            'relatedIdentifier': prepareRelatedIdentifiers(mdId),
-            'funder' : prepareFundingReferences(mdId),
-            'distribution' : prepareDistribution(mdId),
-            'image' : prepareIllustration(mdId),
-            'grade': mdRow.grade if mdRow.grade   else 1,
-            'isExternal': mdRow.isExternal if mdRow.isExternal else 0,
-            'dstype': mdRow.dstype if mdRow.dstype else 'N/A'
+                     'geo' : {
+                         'type':'GeoCoordinates',
+                         'longitude': float(mdRow.geo_point_longitude),
+                         'latitude': float(mdRow.geo_point_latitude)
+                     },
+                     'name': mdRow.fieldname            
+                 },
+              'relatedIdentifier': prepareRelatedIdentifiers(mdId),
+              'funder' : prepareFundingReferences(mdId),
+              'distribution' : prepareDistribution(mdId),
+              'image' : prepareIllustration(mdId),
+             'grade': mdRow.grade if mdRow.grade   else 1,
+             'isExternal': mdRow.is_external if mdRow.is_external else 0,
+             'dstype': mdRow.dstype if mdRow.dstype else 'N/A'
         }
-        ##print(data)
+        print("debug _metadata line 597")
+        print(data)
         
     documentInfo.data = data    
     return documentInfo    
 
 def save(documentInfo): 
-  
+    print("debug _metadata ln 612: doing save")
     if documentInfo.data['@type'][0].lower() == "t":
         datasetFolder = str(documentInfo.folder)
     else: 
@@ -538,13 +558,15 @@ def save(documentInfo):
     repoName =  settings.REPO+ "metadata/"+datasetFolder
     AFolder.makeDir(repoName)
     strVersion = ""
+    nbVersion = float(documentInfo.version)
+    inVersion = int(nbVersion)
     if documentInfo.version is None:
         strVersion = "01"
     else: 
-        if int(documentInfo.version) <10: 
-            strVersion = "0"+str(documentInfo.version).lstrip('0')
+        if int(nbVersion) <10: 
+            strVersion = "0"+str(inVersion).lstrip('0')
         else:
-            strVersion = str(documentInfo.version) 
+            strVersion = str(inVersion) 
     xname = dirname +"/"+ strVersion + "-" + str(documentInfo.shortName) +".json"
     #print (xname)
     fxname = open(xname,'w+')
@@ -561,7 +583,7 @@ def getDOCIDs():
     DOCIDs = []
     cnx = _connect.connect()
     cur = cnx.cursor()
-    cur.execute("""select * from vw_metadata_documents where grt_value like 'dataset' order by 'URL'  """)
+    cur.execute("""select * from vw_metadata_documents where grt_value like 'Dataset' order by 'url'  """)
     results = cur.fetchall()  
     counter = 0  
     for row in results: 
@@ -584,8 +606,11 @@ def get_document_json(dataset_id):
     return documentInfo.data
 
 def makeDocumentInfo(dataset_id):
+    
     documentInfo = DocumentInfo()  
     documentInfo.mdId = dataset_id
+    print("Debug _metadata ln 664")
+    print(documentInfo.mdId)
     documentInfo = process(documentInfo)
     save(documentInfo)
     
@@ -627,7 +652,6 @@ if __name__ == '__main__':
             
             makeDocumentInfo(datasetID)
             
-           
             new_game = input("Would you like to do another one? Enter 'y' or 'n' ")
             if new_game[0].lower()=='y':
                 playing=True
