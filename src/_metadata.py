@@ -42,7 +42,7 @@ class Person:
         self.nameIdentifier = row.name_identifier 
         self.nameIdentifierScheme = row.name_identifier_scheme 
         self.schemeUri = row.scheme_uri 
-        self.organisationName = row.organisation_name 
+        self.organisationName = row.name 
         self.street = row.street_address
         self.locality = row.address_locality 
         self.region = row.address_region 
@@ -94,16 +94,52 @@ class Person:
 
 
 def getDocumentMetadata(mdId):
-    """ sql select m.md_id, m.url, m.identifier, m.identifier_type, m.title, p.organisation_name as publisher, publication_year, grt.type_value as grt_value, srt.type_value as srt_value,
-        m.language, m.version, f.mime_type, f.extension, m.rights_text, m.rights_licence_uri, m.rights_licence, m.description_abstract,m.description_methods,m.description_toc,m.description_technical_info,m.description_quality,m.description_provenance,m.description_other,
-        fl.fieldname, fl.geo_point_latitude, fl.geo_point_longitude
-        from (((((metadata_document m
-        inner join organisation p on m.publisher = p.organisation_id)
-        inner join general_resource_types grt on m.grt_id = grt.grt_id)
-        left outer join specific_resource_types srt on m.srt_id = srt.srt_id)
-        inner join formats f on m.format_id = f.format_id)
-        inner join experiment lte on m.lte_id = lte.experiment_id)
-        inner join fields fl on lte.field_id = fl.field_id encapsulted in a view
+    """ SELECT m.id as md_id, 
+title, 
+url,
+identifier, 
+identifier_type, 
+dataset_type as dstype,
+grt.type_value  as grt_value, 
+srt.type_value  as dataset_type,  
+srt.type_value  as srt_value,
+document_format_id,
+e.field_id,
+f.name as fieldname,
+f.geo_point_latitude, 
+f.geo_point_longitude, 
+e.name as experiment_name, 
+e.code  as experiment_code,
+publication_year,
+short_name,
+publisher_id, 
+is_ready,
+o.name as publisher, 
+version, 
+lang,  
+grade, 
+is_external,
+description_abstract,
+description_methods,
+description_toc,
+description_technical_info,
+description_quality,
+description_provenance,
+description_other,
+doi_created,
+document_format_id as extension, 
+rights_text, 
+rights_licence_uri, 
+rights_licence
+FROM metadata_documents m
+join experiments e on m.experiment_id = e.id 
+join fields f on e.field_id = f.id 
+join organisations o on o.id = m.publisher_id
+join general_resource_types grt on grt.id = m.general_resource_type_id 
+join specific_resource_types srt on srt.id = m.specific_resource_type_id ;
+encapsulted in a view
+    
+    
     
     
     """
@@ -111,7 +147,7 @@ def getDocumentMetadata(mdId):
     cnx = _connect.connect()
     cur = cnx.cursor()
     
-    cur.execute("""select * from viewMetaDocument  where md_id = ? order by grade DESC, title ASC""", mdId)
+    cur.execute("""select * from vw_metadata_documents  where md_id = ? order by grade DESC, title ASC""", mdId)
     return cur
 
 # def prepareCreators_new(mdId):
@@ -141,7 +177,8 @@ def prepareCreators(mdId):
     cur = cnx.cursor()
     creators = []
     # First prepare named people
-    cur.execute('select p.family_name, p.given_name, p.name_identifier, p.name_identifier_scheme, p.scheme_uri, o.organisation_name, o.street_address, o.address_locality, o.address_region, o.address_country, o.postal_code from (person p inner join person_creator pc on p.person_id = pc.person_id) inner join organisation o on p.affiliation = o.organisation_id where pc.md_id = ?', mdId)
+    # corrected for 2023
+    cur.execute('select p.family_name, p.given_name, p.name_identifier, p.name_identifier_scheme, p.scheme_uri, o.name, o.street_address, o.address_locality, o.address_region, o.address_country, o.postal_code from (persons p inner join person_creators pc on p.id = pc.person_id) inner join organisations o on p.organisation_id = o.id where pc.metadata_document_id  = ?', mdId)
     
     results = cur.fetchall()    
     for row in results: 
@@ -150,11 +187,12 @@ def prepareCreators(mdId):
         creators.append(person.asCreatorJson())
            
     # second prepare organisations
-    cur.execute('select * from organisation o inner join organisation_creator oc on o.organisation_id = oc.organisation_id where oc.md_id = ?',mdId)
+     # corrected for 2023
+    cur.execute('select * from organisations o inner join organisation_creators oc on o.id = oc.organisation_id where oc.metadata_document_id  = 70 ?',mdId)
     results = cur.fetchall()
     for row in results:
      
-        creators.append({"type": "organization", "name": row.organisation_name}) 
+        creators.append({"type": "organization", "name": row.name}) 
         
     return creators
 
@@ -255,9 +293,9 @@ def getInfo(database_identifier):
     '''This function looks for a URL or DOI in the document table and returns its title if it is there'''
     cnx = _connect.connect()
     cur = cnx.cursor()
-    sqldi = "select title, grt_value  from viewMetaDocument where identifier = '{}'" 
+    sqldi = "select title, grt_value  from vw_metadata_documents where identifier = '{}'" 
     #print(sqldi.format(database_identifier))
-    #cur.execute("""select title, grt_value  from viewMetaDocument where identifier =  ?""", database_identifier)
+    #cur.execute("""select title, grt_value  from vw_metadata_documents where identifier =  ?""", database_identifier)
     cur.execute(sqldi.format(database_identifier))
     
     result_row = cur.fetchone()
@@ -523,7 +561,7 @@ def getDOCIDs():
     DOCIDs = []
     cnx = _connect.connect()
     cur = cnx.cursor()
-    cur.execute("""select * from viewMetaDocument where grt_value like 'dataset' order by 'URL'  """)
+    cur.execute("""select * from vw_metadata_documents where grt_value like 'dataset' order by 'URL'  """)
     results = cur.fetchall()  
     counter = 0  
     for row in results: 
