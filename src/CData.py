@@ -82,19 +82,8 @@ def allDatasets():
     sql = ''
     sql = 'select * from vw_metadata_documents  where grt_value = \'Dataset\' and  is_ready >= 1 order by  title asc'
     
-    # sql =       'SELECT m.id as md_id, title, url, identifier, identifier_type, dataset_type as dstype, grt.type_value  as grt_value, '
-    # sql = sql + ' srt.type_value  as dataset_type,  document_format_id, description_abstract, e.field_id, f.name as fieldname,'
-    # sql = sql + ' e.name as experiment_name, e.code  as experiment_code, publication_year, short_name, publisher_id, is_ready, '
-    # sql = sql + ' is_external, o.name as publisher, version,  lang,  grade, is_external,  doi_created'
-    # sql = sql + ' FROM metadata_documents m'
-    # sql = sql + ' join experiments e on m.experiment_id = e.id'
-    # sql = sql + ' join fields f on e.field_id = f.id'
-    # sql = sql + ' join organisations o on o.id = m.publisher_id'
-    # sql = sql + ' join general_resource_types grt on grt.id = m.general_resource_type_id '
-    # sql = sql + ' join specific_resource_types srt on srt.id = m.specific_resource_type_id'
-    # sql = sql + ' where grt.type_value = \'Dataset\' and  is_ready  >= 1 order by  title asc'
-    print("debug CData ln 96")
-    print(sql)
+    #print("debug CData ln 96")
+    #print(sql)
     cur.execute(sql)
     results = cur.fetchall()  
     for row in results: 
@@ -109,7 +98,7 @@ def makeAllDatasetList():
     xname = settings.STAGE+ "metadata/default/datasets.json"
     fxname = open(xname,'w+')
     strDatasets =  json.dumps(lsDatasets, indent=4)
-    print (strDatasets)
+    #print (strDatasets)
     fxname.write(strDatasets)
     fxname.close()
     print('list of datasets saved in '+xname)
@@ -129,7 +118,7 @@ def getDatasets(typeOfDoc = 'Dataset', expt_code = 'R/BK/1'):
         dt = Dataset(row)        
         lsDatasets.append(dt.asdatasetJson()) 
         _metadata.makeDocumentInfo(str(dt.md_id)) 
-    print(lsDatasets)
+    #print(lsDatasets)
     return lsDatasets
 
 
@@ -137,13 +126,13 @@ def makeDatasetList(typeOfDoc,expt_code):
     
     lsDatasets = getDatasets(typeOfDoc,expt_code)
     #debug _metadata 137
-    print(lsDatasets)
+    #print(lsDatasets)
     folder = ''.join(ch for ch in expt_code if ch.isalnum()).lower()
     xname = settings.STAGE+ "metadata/"+str(folder)+"/"+typeOfDoc.lower()+"s.json"
     fxname = open(xname,'w+')
     strDatasets =  json.dumps(lsDatasets, indent=4)
     #debug _metadata 143
-    print(strDatasets)
+    #print(strDatasets)
     fxname.write(strDatasets)
     fxname.close()
     print('list of '+typeOfDoc+' saved in '+xname)
@@ -223,14 +212,10 @@ if __name__ == '__main__':
                         inToken = inToken - 1
                         exptCode = exptCodes[inToken]
                         print (exptCode)
-                        makeDatasetList(typeOfDoc,exptCode)
-                        
+                        makeDatasetList(typeOfDoc,exptCode)           
                     else:
                         for exptCode in exptCodes:
-                            makeDatasetList(typeOfDoc,exptCode)
-                            
-                          
-                   
+                            makeDatasetList(typeOfDoc,exptCode)       
              
             print("   ")   
             new_game = input("Would you like to do another one? Enter 'y' or 'n' ")

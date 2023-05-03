@@ -21,7 +21,7 @@ import _connect
 
 
 class DocumentInfo:
-    print("debug _metadata ln 24: doing DocumentInfo")
+    #print("debug _metadata ln 24: doing DocumentInfo")
     def __init__(self):
         
         self.url = None
@@ -50,8 +50,8 @@ class Person:
         self.fullname = self.givenName + " " + self.familyName
         if hasattr(row,'type_value'):
             self.contributorType = row.type_value
-            print("debug _metadata ln 53 - Person")
-            print(row.type_value)
+            #print("debug _metadata ln 53 - Person")
+            #print(row.type_value)
         self.nameIdentifiers = None
         if not self.nameIdentifier is None:
             self.nameIdentifiers = [
@@ -61,8 +61,8 @@ class Person:
                     "schemeURI": self.schemeUri 
                 }
             ]
-        print("debug _metadata ln 64 - Person")
-        print(self.nameIdentifiers)
+        #print("debug _metadata ln 64 - Person")
+        #print(self.nameIdentifiers)
         self.affiliation = dict(type="Organization", name= self.organisationName,  address= self.formatAddress())
         
         
@@ -78,8 +78,8 @@ class Person:
             address = address + ", " + self.postalCode
         if not self.country is None:
             address = address + ", " + self.country
-        print("debug _metadata ln 81 - Person")
-        print(address)
+        #print("debug _metadata ln 81 - Person")
+        #print(address)
         return address
         
     def asCreatorJson(self):
@@ -107,7 +107,7 @@ def getDocumentMetadata(mdId):
  
    
 def prepareCreators(mdId):
-    print("debug _metadata ln 174: doing prepareCreators")
+    #print("debug _metadata ln 174: doing prepareCreators")
     cnx = _connect.connect()
     cur = cnx.cursor()
     creators = []
@@ -124,15 +124,15 @@ def prepareCreators(mdId):
     results = cur.fetchall() 
      
     for row in results: 
-        # print("debug _metadata ln193")
-        # print(row)
+        #print("debug _metadata ln193")
+        #print(row)
         person = Person(row)  
-        # print("debug _metadata ln 197")
-        # print(person.asCreatorJson())
+        #print("debug _metadata ln 197")
+        #print(person.asCreatorJson())
         creators.append(person.asCreatorJson())
         
     # second prepare organisations
-     # corrected for 2023
+    # corrected for 2023
     cur.execute("""select * 
                 from organisations o 
                 inner join organisation_creators oc on o.id = oc.organisation_id 
@@ -140,14 +140,14 @@ def prepareCreators(mdId):
     results = cur.fetchall()
     
     for row in results:
-        # print("debug _metadata ln208")
-        # print(row)
+        #print("debug _metadata ln208")
+        #print(row)
         creators.append({"type": "organization", "name": row.name}) 
         
     return creators
 
 def prepareContributors(mdId):
-    print("debug _metadata ln 214: doing prepareContributors")
+    #print("debug _metadata ln 214: doing prepareContributors")
     cnx = _connect.connect()
     cur = cnx.cursor()
     contributors = [] 
@@ -163,8 +163,8 @@ def prepareContributors(mdId):
     
     results = cur.fetchall()    
     for row in results: 
-        print("debug _metadata ln 232")
-        print(row) 
+        #print("debug _metadata ln 232")
+        #print(row) 
         person = Person(row)
                
         contributors.append(person.asContributorJson())
@@ -180,13 +180,13 @@ def prepareContributors(mdId):
                 where oc.metadata_document_id = ?""",mdId)
     results = cur.fetchall()
     for row in results:
-        print("debug _metadata ln 244: ")
+        #print("debug _metadata ln 244: ")
         contributors.append({"sourceOrganisation": row.name}) 
         
     return contributors    
     
 def prepareSubjects(mdId):
-    print("debug _metadata ln 214: doing prepareSubjects")
+    #print("debug _metadata ln 214: doing prepareSubjects")
     cnx = _connect.connect()
     cur = cnx.cursor()
     subjects = []
@@ -203,7 +203,7 @@ def prepareSubjects(mdId):
     return subjects
     
 def prepareDescriptions(row):
-    print("debug _metadata ln 267: doing prepareDescriptions")
+    #print("debug _metadata ln 267: doing prepareDescriptions")
     descriptions = []
     # checked 2023-04-28 for db2json23
     descriptions.append({'inLanguage' : row.lang, 'descriptionType' : 'Abstract', 'description' : row.description_abstract})
@@ -266,7 +266,7 @@ def prepareDateModified(mdId):
             return row.document_date.strftime('%Y-%m-%d')  
         
 def getInfo(database_identifier):
-    print("debug _metadata ln 330: doing database_identifier")
+    #print("debug _metadata ln 330: doing database_identifier")
     '''This function looks for a URL or DOI in the document table and returns its title if it is there'''
     cnx = _connect.connect()
     cur = cnx.cursor()
@@ -285,7 +285,7 @@ def getInfo(database_identifier):
    
 
 def prepareRelatedIdentifiers(mdId):
-    print("debug _metadata ln 350: doing prepareRelatedIdentifiers")
+    #print("debug _metadata ln 350: doing prepareRelatedIdentifiers")
     cnx = _connect.connect()
     cur = cnx.cursor()
     related_identifiers = []
@@ -469,7 +469,7 @@ where
     return illustration
 
 def process(documentInfo):
-    print("debug _metadata ln 174: doing process")
+    #print("debug _metadata ln 174: doing process")
     mdId = documentInfo.mdId
     mdCursor = getDocumentMetadata(mdId)
     mdRow = mdCursor.fetchone()
@@ -541,14 +541,14 @@ def process(documentInfo):
              'isExternal': mdRow.is_external if mdRow.is_external else 0,
              'dstype': mdRow.dstype if mdRow.dstype else 'N/A'
         }
-        print("debug _metadata line 597")
-        print(data)
+        #print("debug _metadata line 597")
+        #print(data)
         
     documentInfo.data = data    
     return documentInfo    
 
 def save(documentInfo): 
-    print("debug _metadata ln 612: doing save")
+    #print("debug _metadata ln 612: doing save")
     if documentInfo.data['@type'][0].lower() == "t":
         datasetFolder = str(documentInfo.folder)
     else: 
@@ -568,10 +568,10 @@ def save(documentInfo):
         else:
             strVersion = str(inVersion) 
     xname = dirname +"/"+ strVersion + "-" + str(documentInfo.shortName) +".json"
-    #print (xname)
+    #print(xname)
     fxname = open(xname,'w+')
     strJsDoc =  json.dumps(documentInfo.data, indent=4)
-    #print (strJsDoc)
+    #print(strJsDoc)
     fxname.write(strJsDoc)
     fxname.close()
    
@@ -609,8 +609,8 @@ def makeDocumentInfo(dataset_id):
     
     documentInfo = DocumentInfo()  
     documentInfo.mdId = dataset_id
-    print("Debug _metadata ln 664")
-    print(documentInfo.mdId)
+    #print("Debug _metadata ln 664")
+    #print(documentInfo.mdId)
     documentInfo = process(documentInfo)
     save(documentInfo)
     
@@ -631,10 +631,10 @@ if __name__ == '__main__':
             counter = 0
             for items in DOCIDs: 
                 counter = counter + 1
-                #print ("%s -  %s (%s) DOCIDs =  %s" % (counter, items['title'],items['expCode'], items['documentID']))
+                #print("%s -  %s (%s) DOCIDs =  %s" % (counter, items['title'],items['expCode'], items['documentID']))
                 IDs.append(str(items['documentID']))
                 tokens.append(str(counter))
-            #print (" ")  
+            #print(" ")  
             #print(tokens)
         
             token = '0'
@@ -648,7 +648,7 @@ if __name__ == '__main__':
                     inToken = int(token)
                     inToken = inToken - 1
                     datasetID = IDs[inToken]
-                #print (datasetID)
+                #print(datasetID)
             
             makeDocumentInfo(datasetID)
             

@@ -27,14 +27,13 @@ class Keyword:
     join subject_schemas ss on s.ss_id = ss.ss_id 
     order by subject asc
      "datasets" :  getDS(self.subject)  
-     "datasets" : getDS(self.subject) 
-    """
+     "datasets" : getDS(self.subject) identifier  """
     def __init__(self, row):
      
         self.subject = row.subject 
-        self.schema = row.schema_name 
-        self.identifier= row.subject_uri 
-        self.schema_uri = row.schema_uri
+        self.schema = row.name 
+        self.identifier= row.suburi 
+        self.schema_uri = row.schemauri
         
         
         
@@ -59,7 +58,7 @@ def getPAGES(kw):
     
     # for the files in the lists: open the files in turn Try with 1
     # the list of pages: 
-    with open('d:/eRAWebStage/eRAstage27/metadata/default/infofiles.json', 'r') as myfiles:
+    with open('d:/eRAWebStage/eRAsandpit01/metadata/default/infofiles.json', 'r') as myfiles:
         files=myfiles.read()
         
     obj = json.loads(files)
@@ -121,26 +120,29 @@ def getDS(kw):
     cur = cnx.cursor()
     lsDS = []
     #select the keywords and the md_ids associated with that
-    sql = ' select s.subject, md.md_id , md.title, md.identifier, md.url,md.short_name, md.version, e.experiment_code '
+    sql = ' select s.subject as subject, md.id , md.title, md.identifier, md.url,md.short_name, md.version, e.code '
     sql += ' from subjects s'
-    sql += ' inner join document_subjects ds on ds.subject_id = s.subject_id '
-    sql += ' join metadata_document md on md.md_id = ds.md_id '
-    sql += ' join experiment e on md.lte_id = e.experiment_id '
-    sql += ' where md.grt_id = 4'
+    sql += ' inner join document_subjects ds on ds.subject_id = s.id '
+    sql += ' join metadata_documents md on md.id = ds.metadata_document_id '
+    sql += ' join experiments e on md.experiment_id = e.id '
+    sql += ' where md.general_resource_type_id = 4'
     sql += ' and subject like \'{}\''.format(kw)
     sql += ' order by subject asc'
     cur.execute(sql)
     results = cur.fetchall()  
     for row in results:
-        DS = row.md_id
+        DS = row.id
         if DS:
-            version = row.version.strip('0')#
+            
+    
+    
+            version = float(row.version)
             if int(version) < 10:
                 strCount = '0'+str(version)
             else:
                 strCount = str(version)
 
-            exptCode = ''. join(ch for ch in row.experiment_code if ch.isalnum()).lower()
+            exptCode = ''. join(ch for ch in row.code if ch.isalnum()).lower()
             lsDS.append(dict( 
                 DOI = row.identifier,
                 URL = 'dataset/'+exptCode+'/'+strCount+'-'+row.short_name,
@@ -156,26 +158,26 @@ def getDOCS(kw):
     cur = cnx.cursor()
     lsDS = []
     #select the keywords and the md_ids associated with that
-    sql = ' select s.subject, md.md_id , md.title, md.identifier, md.url,md.short_name, md.version, e.experiment_code '
+    sql = ' select s.subject as subject, md.id , md.title, md.identifier, md.url,md.short_name, md.version, e.code '
     sql += ' from subjects s'
-    sql += ' inner join document_subjects ds on ds.subject_id = s.subject_id '
-    sql += ' join metadata_document md on md.md_id = ds.md_id '
-    sql += ' join experiment e on md.lte_id = e.experiment_id '
-    sql += ' where md.grt_id = 12'
+    sql += ' inner join document_subjects ds on ds.subject_id = s.id '
+    sql += ' join metadata_documents md on md.id = ds.metadata_document_id '
+    sql += ' join experiments e on md.experiment_id = e.id '
+    sql += ' where md.general_resource_type_id = 12'
     sql += ' and subject like \'{}\''.format(kw)
     sql += ' order by subject asc'
     cur.execute(sql)
     results = cur.fetchall()  
     for row in results:
-        DS = row.md_id
+        DS = row.id
         if DS:
-            version = row.version.strip('0')#
+            version = float(row.version)
             if int(version) < 10:
                 strCount = '0'+str(version)
             else:
                 strCount = str(version)
 
-            exptCode = ''. join(ch for ch in row.experiment_code if ch.isalnum()).lower()
+            exptCode = ''. join(ch for ch in row.code if ch.isalnum()).lower()
             lsDS.append(dict( 
                 DOI = row.identifier,
                 URL = row.url,
@@ -191,10 +193,10 @@ def getKeywords():
     cur = cnx.cursor()
     lsKW =  []
     
-    sql = 'select distinct s.subject, s.subject_uri, ss.schema_name, ss.schema_uri  '
+    sql = 'select distinct s.subject, s.uri as suburi, ss.name, ss.uri as schemauri '
     sql += ' from subjects s  '
-    sql += ' join subject_schemas ss on s.ss_id = ss.ss_id '
-    sql += ' inner join document_subjects ds on ds.subject_id = s.subject_id'
+    sql += ' join subject_schemas ss on s.subject_schemas_id = ss.id '
+    sql += ' inner join document_subjects ds on ds.subject_id = s.id'
     sql += ' order by subject asc'
 
     cur.execute(sql)
