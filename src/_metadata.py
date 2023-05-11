@@ -102,7 +102,7 @@ def getDocumentMetadata(mdId):
       
     cnx = _connect.connect()
     cur = cnx.cursor() 
-    cur.execute("""select * from vw_metadata_documents  where md_id = ?""", mdId)
+    cur.execute("""select * from vw_met_docs where id = ?""", mdId)
     return cur
  
    
@@ -489,6 +489,7 @@ def process(documentInfo):
         documentInfo.sDOI = sDOI
         documentInfo.shortName = mdRow.short_name
         documentInfo.version = str(mdRow.version)
+        
         #print(sDOI)
       
         data = {
@@ -531,7 +532,7 @@ def process(documentInfo):
                          'longitude': float(mdRow.geo_point_longitude),
                          'latitude': float(mdRow.geo_point_latitude)
                      },
-                     'name': mdRow.fieldname            
+                     'name': mdRow.field_name            
                  },
               'relatedIdentifier': prepareRelatedIdentifiers(mdId),
               'funder' : prepareFundingReferences(mdId),
@@ -539,7 +540,7 @@ def process(documentInfo):
               'image' : prepareIllustration(mdId),
              'grade': mdRow.grade if mdRow.grade   else 1,
              'isExternal': mdRow.is_external if mdRow.is_external else 0,
-             'dstype': mdRow.dstype if mdRow.dstype else 'N/A'
+             'dstype': mdRow.dataset_type if mdRow.dataset_type else 'N/A'
         }
         #print("debug _metadata line 597")
         #print(data)
@@ -563,12 +564,11 @@ def save(documentInfo):
     if documentInfo.version is None:
         strVersion = "01"
     else: 
-        if int(nbVersion) <10: 
+        if int(inVersion) <10: 
             strVersion = "0"+str(inVersion).lstrip('0')
         else:
             strVersion = str(inVersion) 
     xname = dirname +"/"+ strVersion + "-" + str(documentInfo.shortName) +".json"
-    #print(xname)
     fxname = open(xname,'w+')
     strJsDoc =  json.dumps(documentInfo.data, indent=4)
     #print(strJsDoc)
@@ -583,7 +583,7 @@ def getDOCIDs():
     DOCIDs = []
     cnx = _connect.connect()
     cur = cnx.cursor()
-    cur.execute("""select * from vw_metadata_documents where grt_value like 'Dataset' order by 'url'  """)
+    cur.execute("""select * from vw_met_docs where grt_value like 'Dataset' order by 'url'  """)
     results = cur.fetchall()  
     counter = 0  
     for row in results: 
@@ -591,7 +591,7 @@ def getDOCIDs():
         counter +=1  
         DOCIDs.append(dict(
             nb = counter,
-            documentID = row.md_id,
+            documentID = row.id,
             title = row.title.strip(),
             expCode = row.experiment_code))
            

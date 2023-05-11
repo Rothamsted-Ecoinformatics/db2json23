@@ -24,15 +24,15 @@ class Dataset:
     """The class that will define a single dataset . The row is the result of a query in the table
     """
     def __init__(self, row):
-        self.md_id = row.md_id 
+        self.md_id = row.id 
         self.title = row.title 
         self.URL = row.url  
         self.identifier = row.identifier 
         self.identifier_type = row.identifier_type 
-        self.dataset_type = row.dataset_type 
+        self.dataset_type = row.grt_value 
         self.extension = row.document_format_id 
         self.description = row.description_abstract
-        self.fieldname = row.fieldname 
+        self.fieldname = row.field_name 
         self.experiment_name = row.experiment_name 
         self.publication_year = row.publication_year
         self.experiment_code = row.experiment_code 
@@ -40,16 +40,22 @@ class Dataset:
         self.isReady = row.is_ready
         self.isExternal = row.is_external if row.is_external else 0
         self.grade = row.grade if row.grade else 1
-        self.dstype = row.dstype if row.dstype else 'N/A'
+        self.dstype = row.dataset_type if row.dataset_type else 'N/A'
         
-        if row.version is None: 
-            self.version = "01"
+        strVersion = ""
+        nbVersion = float(row.version)
+        inVersion = int(nbVersion)
+    
+        if row.version is None:
+            strVersion = "01"
         else: 
-            if int(row.version) <10:
-                self.version = '0'+str(row.version).lstrip('0')
-            else: 
-                self.version = row.version
-        
+            if int(inVersion) <10: 
+                strVersion = "0"+str(inVersion).lstrip('0')
+            else:
+                strVersion = str(inVersion) 
+              
+        self.version = strVersion   
+    
     def asdatasetJson(self):    
         dataset =  {         
               "md_id": self.md_id,
@@ -80,7 +86,7 @@ def allDatasets():
     cur = cnx.cursor()
     lsAllDatasets =  []
     sql = ''
-    sql = 'select * from vw_metadata_documents  where grt_value = \'Dataset\' and  is_ready >= 1 order by  title asc'
+    sql = 'SELECT * from vw_met_docs  where grt_value = \'Dataset\' and  is_ready >= 1 order by  title asc'
     
     #print("debug CData ln 96")
     #print(sql)
@@ -108,17 +114,18 @@ def getDatasets(typeOfDoc = 'Dataset', expt_code = 'R/BK/1'):
     cur = cnx.cursor()
     lsDatasets =  []
     
-    sql = 'select * from vw_metadata_documents  where grt_value = \'{}\' and  experiment_code = \'{}\' order by grade desc, title asc'.format(typeOfDoc, expt_code)
-    #print("debug _metadata 122")
-    #print(sql)
+    sql = '''select * from vw_met_docs where grt_value = \'{}\' and  experiment_code LIKE \'%{}%\' order by grade desc, title asc'''.format(typeOfDoc, expt_code)
+    print("debug CData 112")
+    print(sql)
     cur.execute(sql)
+    
     results = cur.fetchall() 
-
+    
     for row in results: 
-        dt = Dataset(row)        
+        dt = Dataset(row)       
         lsDatasets.append(dt.asdatasetJson()) 
         _metadata.makeDocumentInfo(str(dt.md_id)) 
-    #print(lsDatasets)
+    print(lsDatasets)
     return lsDatasets
 
 

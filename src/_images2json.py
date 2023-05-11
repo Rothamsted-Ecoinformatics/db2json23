@@ -104,7 +104,7 @@ def getImages(exptID = 'rothamsted'):
 
     sql = f"SELECT i.id,  i.is_reviewed , i.file_location , i.is_www , i.person_id , p.given_name, p.family_name, i.caption, i.description, i.height, i.width, i.orientation, i.experiment_code, i.image_type FROM images i JOIN persons p on i.person_id = p.id where  experiment_code like \'{exptID}\' "
     #sql = f"Select * from qsMediasWWW where  exptID like \'{exptID}\' "
-    print(sql)
+    # print(sql)
     cur.execute(sql)
     results = cur.fetchall()  
     for row in results: 
@@ -129,7 +129,7 @@ def getAllImages():
 
     #sql = f"Select * from qsMediasWWW "
     sql = f"SELECT i.id,  i.is_reviewed , i.file_location , i.is_www , i.person_id , p.given_name, p.family_name, i.caption, i.description, i.height, i.width, i.orientation, i.experiment_code, i.image_type FROM images i JOIN persons p on i.person_id = p.id"
-    print(sql)
+    # print(sql)
     cur.execute(sql)
     results = cur.fetchall()  
     for row in results: 

@@ -27,6 +27,7 @@ import os
 import stat
 import sys 
 import _connect
+import settings
 
 
 class Expt:
@@ -182,8 +183,10 @@ if __name__ == '__main__':
     #config.read('config.ini')
  
 
-    stage = "d:/eRAWebStage/eRAsandpit01/" 
-    repo = "d:/eRAWebRepo/repo08/"
+    # stage = "d:/eRAWebStage/eraGilbert01/" 
+    # repo = "d:/eRAWebRepo/repo08/"
+    stage = settings.STAGE
+    repo = settings.REPO
     #stage = config['STAGE']['STAGE']
     #repo = config['STAGE']['REPO']
     status = " created"

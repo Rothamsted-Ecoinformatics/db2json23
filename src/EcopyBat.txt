@@ -1,36 +1,36 @@
 REM UPDATING era2018-new  
 xcopy "C:\Users\castells\Rothamsted Research\e-RA - Documents\Data-docs repository\metadata" "P:\era2018-new\metadata" /s /i /f /y /d
-xcopy "d:\eRAWebStage\eRAstage27\metadata" "P:\era2018-new\metadata" /s /i /f /y /d
-xcopy "d:\eRAWebStage\eRAstage27\metadata" "\\INTRANET-SERVER\era\era2018-new\metadata" /s /i /f /y /d
+xcopy "d:\eRAWebStage\eRAsandpit01\metadata" "P:\era2018-new\metadata" /s /i /f /y /d
+xcopy "d:\eRAWebStage\eRAsandpit01\metadata" "\\INTRANET-SERVER\era\era2018-new\metadata" /s /i /f /y /d
 
 
 REM UPDATING era2021
 xcopy "C:\Users\castells\Rothamsted Research\e-RA - Documents\Data-docs repository\metadata" "P:\era2021\metadata" /s /i /f /y /d
-xcopy "d:\eRAWebStage\eRAstage27\metadata" "P:\era2021\metadata" /s /i /f /y /d
+xcopy "d:\eRAWebStage\eRAsandpit01\metadata" "P:\era2021\metadata" /s /i /f /y /d
 
 
 REM UPDATING Live site
 xcopy "C:\Users\castells\Rothamsted Research\e-RA - Documents\Data-docs repository\metadata" "U:\metadata" /s /i /f /y /d 
-xcopy "d:\eRAWebStage\eRAstage27\metadata" "U:\metadata" /s /i /f /y /d
+xcopy "d:\eRAWebStage\eRAsandpit01\metadata" "U:\metadata" /s /i /f /y /d
 
 
 REM copy all files - 
 REM  era2018-new  
 xcopy "C:\Users\castells\Rothamsted Research\e-RA - Documents\Data-docs repository\metadata" "P:\era2018-new\metadata" /s /i /f /y 
-xcopy "d:\eRAWebStage\eRAstage27\metadata" "P:\era2018-new\metadata" /s /i /f /y 
-xcopy "d:\eRAWebStage\eRAstage27\metadata" "\\INTRANET-SERVER\era\era2018-new\metadata" /s /i /f /y 
+xcopy "d:\eRAWebStage\eRAsandpit01\metadata" "P:\era2018-new\metadata" /s /i /f /y 
+xcopy "d:\eRAWebStage\eRAsandpit01\metadata" "\\INTRANET-SERVER\era\era2018-new\metadata" /s /i /f /y 
 
 
 REM  era2021
 xcopy "C:\Users\castells\Rothamsted Research\e-RA - Documents\Data-docs repository\metadata" "P:\era2021\metadata" /s /i /f /y 
-xcopy "d:\eRAWebStage\eRAstage27\metadata" "P:\era2021\metadata" /s /i /f /y 
+xcopy "d:\eRAWebStage\eRAsandpit01\metadata" "P:\era2021\metadata" /s /i /f /y 
 
 
 REM  Live site
 xcopy "C:\Users\castells\Rothamsted Research\e-RA - Documents\Data-docs repository\metadata" "U:\metadata" /s /i /f /y 
-xcopy "d:\eRAWebStage\eRAstage27\metadata" "U:\metadata" /s /i /f /y 
+xcopy "d:\eRAWebStage\eRAsandpit01\metadata" "U:\metadata" /s /i /f /y 
 
 
 REM Updating Metadata
-xcopy "d:\eRAWebStage\eRAstage27\metadata" "\\INTRANET-SERVER\era\era2018-new\metadata" /s /i /f /y  
+xcopy "d:\eRAWebStage\eRAsandpit01\metadata" "\\INTRANET-SERVER\era\era2018-new\metadata" /s /i /f /y  
 

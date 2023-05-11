@@ -18,10 +18,27 @@ import collections
 def connect():
  
     #con = pymysql.connect(host = host,user=user,password=pwd,db=db,cursorclass=pymysql.cursors.DictCursor) 
-    dsn='burdock-eraSandpit'
-    uid='trampolines'
-    pwd='Ad0rnSp4d3'    
+    #Connection for Sandpit
+    # dsn='burdock-eraSandpit'
+    # uid='trampolines'
+    # pwd='Ad0rnSp4d3'    
+    # con  = pyodbc.connect('DSN='+dsn+';uid='+uid+';pwd='+pwd)
+    
+    # connection for Gilbert
+    dsn='burdock-eraGilbert'
+    uid='bellringer'
+    pwd='G3n3tL30n3'    
     con  = pyodbc.connect('DSN='+dsn+';uid='+uid+';pwd='+pwd)
+    
+    
+    
+# DB_CONNECTION=sqlsrv
+# DB_HOST=burdock2.rothamsted.ac.uk
+# DB_PORT=1433
+# DB_DATABASE=eraGilbert
+# DB_USERNAME=bellringer
+# DB_PASSWORD=G3n3tL30n3
+
     
     #con = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=C:\Users\castells\Rothamsted Research\e-RA - Documents\datacite\DataCite Metadata database.accdb;')
     #con = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=D:\code\access\DataCite Metadata database.accdb;')
