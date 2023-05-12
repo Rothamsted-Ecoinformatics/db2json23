@@ -29,7 +29,7 @@ class Dataset:
         self.URL = row.url  
         self.identifier = row.identifier 
         self.identifier_type = row.identifier_type 
-        self.dataset_type = row.grt_value 
+        self.dataset_type = row.srt_value 
         self.extension = row.document_format_id 
         self.description = row.description_abstract
         self.fieldname = row.field_name 
