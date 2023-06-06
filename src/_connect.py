@@ -17,8 +17,8 @@ import collections
 
 def connect():
  
-    #con = pymysql.connect(host = host,user=user,password=pwd,db=db,cursorclass=pymysql.cursors.DictCursor) 
-    #Connection for Sandpit
+    # #con = pymysql.connect(host = host,user=user,password=pwd,db=db,cursorclass=pymysql.cursors.DictCursor) 
+    # #Connection for Sandpit
     # dsn='burdock-eraSandpit'
     # uid='trampolines'
     # pwd='Ad0rnSp4d3'    

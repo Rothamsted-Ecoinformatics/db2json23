@@ -58,7 +58,7 @@ def getPAGES(kw):
     
     # for the files in the lists: open the files in turn Try with 1
     # the list of pages: 
-    with open('d:/eRAWebStage/eRAsandpit01/metadata/default/infofiles.json', 'r') as myfiles:
+    with open('d:/eRAWebStage/eraGilbert01/metadata/default/infofiles.json', 'r') as myfiles:
         files=myfiles.read()
         
     obj = json.loads(files)
@@ -120,14 +120,14 @@ def getDS(kw):
     cur = cnx.cursor()
     lsDS = []
     #select the keywords and the md_ids associated with that
-    sql = ' select s.subject as subject, md.id , md.title, md.identifier, md.url,md.short_name, md.version, e.code '
-    sql += ' from subjects s'
-    sql += ' inner join document_subjects ds on ds.subject_id = s.id '
-    sql += ' join metadata_documents md on md.id = ds.metadata_document_id '
-    sql += ' join experiments e on md.experiment_id = e.id '
-    sql += ' where md.general_resource_type_id = 4'
-    sql += ' and subject like \'{}\''.format(kw)
-    sql += ' order by subject asc'
+    sql = ''' select s.subject as subject, md.id , md.title, md.identifier, md.url,md.short_name, md.version, e.code 
+     from subjects s
+     inner join document_subjects ds on ds.subject_id = s.id 
+     join metadata_documents md on md.id = ds.metadata_document_id 
+     join experiments e on md.experiment_id = e.id 
+     where md.general_resource_type_id = 4
+     and subject like '{}'  order by subject asc'''.format(kw)
+    
     cur.execute(sql)
     results = cur.fetchall()  
     for row in results:
@@ -158,14 +158,14 @@ def getDOCS(kw):
     cur = cnx.cursor()
     lsDS = []
     #select the keywords and the md_ids associated with that
-    sql = ' select s.subject as subject, md.id , md.title, md.identifier, md.url,md.short_name, md.version, e.code '
-    sql += ' from subjects s'
-    sql += ' inner join document_subjects ds on ds.subject_id = s.id '
-    sql += ' join metadata_documents md on md.id = ds.metadata_document_id '
-    sql += ' join experiments e on md.experiment_id = e.id '
-    sql += ' where md.general_resource_type_id = 12'
-    sql += ' and subject like \'{}\''.format(kw)
-    sql += ' order by subject asc'
+    sql = ''' select s.subject as subject, md.id , md.title, md.identifier, md.url,md.short_name, md.version, e.code 
+     from subjects s
+     inner join document_subjects ds on ds.subject_id = s.id 
+     join metadata_documents md on md.id = ds.metadata_document_id 
+     join experiments e on md.experiment_id = e.id 
+     where md.general_resource_type_id = 12
+     and subject like '{}'  order by subject asc'''.format(kw)
+    
     cur.execute(sql)
     results = cur.fetchall()  
     for row in results:
@@ -193,11 +193,11 @@ def getKeywords():
     cur = cnx.cursor()
     lsKW =  []
     
-    sql = 'select distinct s.subject, s.uri as suburi, ss.name, ss.uri as schemauri '
-    sql += ' from subjects s  '
-    sql += ' join subject_schemas ss on s.subject_schemas_id = ss.id '
-    sql += ' inner join document_subjects ds on ds.subject_id = s.id'
-    sql += ' order by subject asc'
+    sql = '''select distinct s.subject, s.uri as suburi, ss.name, ss.uri as schemauri 
+     from subjects s  
+     join subject_schemas ss on s.subject_schemas_id = ss.id 
+     inner join document_subjects ds on ds.subject_id = s.id
+     order by subject asc'''
 
     cur.execute(sql)
     results = cur.fetchall()  

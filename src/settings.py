@@ -26,10 +26,8 @@ REPO = "d:/eRAWebRepo/repo08/"
 ROOT = "http://local-info.rothamsted.ac.uk/eRA/era2023/"
 INTRA = 'P://era2023/'
 
-# ROOT = "http://localhost/era2018/"
-# STAGE = "d:/1NATH/eRAWebStage/eRAstage26/"
-# REPO = "d:/1/NATH/eRAWebRepo/repo06/"
 DEFAULT = "metadata/default/"
+IMAGES = "images/metadata"
 STATIONS = ["default", "rothamsted", "broomsbarn", "woburn", "saxmundham"]
 EXPERIMENTS =  [ "met", "rms", "bms", "wms", "sms", "rro", "rrn2"]
 DEFAULTDIR = STAGE+DEFAULT

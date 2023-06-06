@@ -114,7 +114,7 @@ def getDatasets(typeOfDoc = 'Dataset', expt_code = 'R/BK/1'):
     cur = cnx.cursor()
     lsDatasets =  []
     
-    sql = '''select * from vw_met_docs where grt_value = \'{}\' and  experiment_code LIKE \'%{}%\' order by grade desc, title asc'''.format(typeOfDoc, expt_code)
+    sql = '''select * from vw_met_docs where grt_value = \'{}\' and  experiment_code LIKE \'{}\' order by grade desc, title asc'''.format(typeOfDoc, expt_code)
     print("debug CData 112")
     print(sql)
     cur.execute(sql)
