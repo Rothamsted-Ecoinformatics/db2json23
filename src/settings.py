@@ -46,6 +46,22 @@ toConvert = {
                 #
                 }
 
+def bye(): 
+    print("   ")
+    print("Thanks for your work!")
+    print (" ")
+    print (" ")
+    print ("     .-******-. ")
+    print ("   .'          '. ")
+    print ("  /   O      O   \ ")
+    print (" :                : ")
+    print (" |                | ")
+    print (" : ',          ,' : ")
+    print ("  \  '-......-'  / ")
+    print ("   '.          .' ")
+    print ("     '-......-' ")
+
+
 if __name__ == '__main__':
     print('ROOT: {}'.format(ROOT))
     print('STAGE: {}'.format(STAGE))

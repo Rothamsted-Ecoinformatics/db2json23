@@ -137,10 +137,11 @@ def getDS(kw):
     
     
             version = float(row.version)
+            inVersion = int(version)
             if int(version) < 10:
-                strCount = '0'+str(version)
+                strCount = '0'+str(inVersion)
             else:
-                strCount = str(version)
+                strCount = str(inVersion)
 
             exptCode = ''. join(ch for ch in row.code if ch.isalnum()).lower()
             lsDS.append(dict( 
@@ -172,10 +173,11 @@ def getDOCS(kw):
         DS = row.id
         if DS:
             version = float(row.version)
+            inVersion = int(version)
             if int(version) < 10:
-                strCount = '0'+str(version)
+                strCount = '0'+str(inVersion)
             else:
-                strCount = str(version)
+                strCount = str(inVersion)
 
             exptCode = ''. join(ch for ch in row.code if ch.isalnum()).lower()
             lsDS.append(dict( 

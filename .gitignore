@@ -2,3 +2,4 @@ src/__pycache__/
 src/config.ini
 src/dist/
 src/_connect.py
+src/freeze.py

@@ -214,9 +214,11 @@ if __name__ == '__main__':
     copyStr = []
      
     print(strJsonExpts)
-    print ("-----Directory Creation-----")
+    print("-----Directory Creation-----")
     print(dirs)
     
+    settings.bye()
+    exit = input(" All done - Hit return to close window")
    
     
     #cpLs = makeCopyString(results)

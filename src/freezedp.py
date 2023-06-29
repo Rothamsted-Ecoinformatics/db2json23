@@ -1,7 +1,7 @@
 from py2exe import freeze
 
 freeze(
-    console=['BExpts.py', 'CData.py', 'DKeywords.py', 'FFiles.py', 'Gimages.py'],
+    console=['data_packager.py'],
     windows=[],
     data_files=['settings.py'],
     zipfile='library.zip',

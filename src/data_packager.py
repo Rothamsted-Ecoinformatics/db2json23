@@ -12,10 +12,15 @@ def camel_to_space(val):
     return re.sub(r'([a-z])([A-Z])', r'\1 \2',val)
 
 
-filename = '01-WLTLSOIL.xlsx'
-mdq_id = "62"
-id = "https://doi.org/10.23637/wcs10-soil-01"
+# filename = '01-WLTLSOIL.xlsx'
+# mdq_id = "62"
+# id = "https://doi.org/10.23637/wcs10-soil-01"
 
+print ("--- have your xls file ready in a D:\code\data\ folder ---- ")
+
+filename = input ("Filename including extension: ")
+mdq_id = input ("metadata document ID (find this in the eracuration): ")
+id = "http://doi.org/"+input ("DOI: ")
 
 
 #----------------------Code after this -------------------------------------
@@ -77,8 +82,6 @@ pkg.profile = "tabular-data-package"
 print("-- 3. Update the metadata for each data resource - TABS --")
 ## 3. Update the metadata for each data resource
 for res in pkg.resources:
-    #print("res: ------")
-    #print(res)
     rname = res["name"]
     print("Resource - fname: "+ rname)
     keys = []
@@ -143,13 +146,13 @@ for res in pkg.resources:
         res.schema.foreign_keys = keys
 try:
     valid = validate(pkg)
-    print("VALID ++++++++++++++++++++++++")
+    print("+++++++++++ VALID +++++++++++")
    # print(json.dumps(valid, indent=4))
    # print("VALID++++++++++++++++++++++++")
 except exception.FrictionlessException as e:
-    print("INVALID++++++++++++++++++++++++")
+    print("+++++++++++ INVALID+++++++++++++")
     print(json.dumps(e.error, indent=4))
-    print("INVALID++++++++++++++++++++++++")
+    print("+++++++++++ INVALID++++++++++++++")
 
 print('--- 4. Add additional metadata to the package from README page --- ')
 ## 4. Add additional metadata to the package
@@ -334,3 +337,7 @@ except exception.FrictionlessException as e:
     print("================ INVALID PACKAGE ==================")
     print(json.dumps(e.error, indent=4))
     print("================ INVALID JSON ==================")
+    
+print("================ That's all ==================")
+print("Your Data package is in D:/code/data. ")
+print("Remember to set XLS tab to be README before saving ")

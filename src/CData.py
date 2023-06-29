@@ -234,8 +234,8 @@ if __name__ == '__main__':
                 makeAllDatasetList()
                 print("   ")
                 print("   ")
-                print("   ")
-                print("Thanks for your work!")
+                settings.bye()
+                exit = input(" All done - Hit return to close window")
                 break    
            
           

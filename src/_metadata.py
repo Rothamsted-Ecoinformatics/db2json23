@@ -270,7 +270,8 @@ def getInfo(database_identifier):
     '''This function looks for a URL or DOI in the document table and returns its title if it is there'''
     cnx = _connect.connect()
     cur = cnx.cursor()
-    sqldi = "select title, grt_value  from vw_metadata_documents where identifier = '{}'" 
+    sqldi = "select title, grt_value  from vw_metadata_documents where identifier = '{}'"
+  
     #print(sqldi.format(database_identifier))
     #cur.execute("""select title, grt_value  from vw_metadata_documents where identifier =  ?""", database_identifier)
     cur.execute(sqldi.format(database_identifier))
@@ -539,7 +540,8 @@ def process(documentInfo):
               'distribution' : prepareDistribution(mdId),
               'image' : prepareIllustration(mdId),
              'grade': mdRow.grade if mdRow.grade   else 1,
-             'isExternal': mdRow.is_external if mdRow.is_external else 0,
+             'isReady'      : mdRow.is_ready if mdRow.is_ready   else 1,
+             'isExternal'   : mdRow.is_external if mdRow.is_external else 0,
              'dstype': mdRow.dataset_type if mdRow.dataset_type else 'N/A'
         }
         #print("debug _metadata line 597")
