@@ -16,6 +16,7 @@ import json
 import settings
 import _metadata
 import _connect
+from slugify import slugify
 from _overlapped import NULL
 
 
@@ -30,7 +31,7 @@ class Keyword:
      "datasets" : getDS(self.subject) identifier  """
     def __init__(self, row):
      
-        self.subject = row.subject 
+        self.subject = row.subject
         self.schema = row.name 
         self.identifier= row.suburi 
         self.schema_uri = row.schemauri
@@ -41,6 +42,7 @@ class Keyword:
            
         keyword =  {         
               "keyword": self.subject,
+              "slug": slugify(self.subject),
               "identifier": self.identifier,
               "schema":   self.schema,
               "URL": self.schema_uri + self.identifier,

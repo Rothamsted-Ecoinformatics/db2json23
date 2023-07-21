@@ -3,7 +3,7 @@
 CLS
 ECHO  . 
 ECHO  .. 
-ECHO  this will update the metadata, repository and images - special for NATHALIE 
+ECHO  this will update the metadata, repository and images - special for SARAH 
 ECHO  . 
 ECHO  .. 
 CHOICE /C YN /M "Is this ok? (Y or N)"%1
@@ -21,9 +21,9 @@ xcopy "d:\eRAWebStage\eraGilbert01\metadata" "\\internet-serv2\newera\metadata" 
 ECHO .
 ECHO UPDATING Repository
 ECHO ...to era2023
-xcopy "C:\Users\castells\Rothamsted Research\e-RA - Documents\Data-docs repository\metadata" "\\INTRANET-SERVER\era\era2023\metadata" /s /i /f /y /d
+xcopy "C:\Users\perrymas\OneDrive - Rothamsted Research\@ e-RA Documents\Data-docs repository\metadata" "\\INTRANET-SERVER\era\era2023\metadata" /s /i /f /y /d
 ECHO ...to Live
-xcopy "C:\Users\castells\Rothamsted Research\e-RA - Documents\Data-docs repository\metadata" "\\internet-serv2\newera\metadata" /s /i /f /y /d
+xcopy "C:\Users\perrymas\OneDrive - Rothamsted Research\@ e-RA Documents\Data-docs repository\metadata" "\\internet-serv2\newera\metadata" /s /i /f /y /d
 ECHO .
 ECHO UPDATING images
 xcopy "\\INTRANET-SERVER\era\era2023\images" "\\internet-serv2\newera\images" /s /i /f /y /d
@@ -32,8 +32,6 @@ ECHO UPDATING infofiles - only if they are already in destination
 xcopy "\\INTRANET-SERVER\era\era2023\metadata" "\\internet-serv2\newera\metadata" /s /i /f /y /u /d
 GOTO END
 ::UPDATE
-
-
 
 :END
 timeout /t -1
