@@ -15,6 +15,7 @@ import _images2json
 #from pygments.lexers import sql
 import _prep1
 
+
 def prepareTOC(GLTENIDs):
     '''experiment_name = row.experiment_name,
             folder = row.experiment_code.replace('/','').lower(),
@@ -115,13 +116,16 @@ def process(exptID):
                 folder = items['folder']
       
         print(folder)
-         
+        # GLTENmetadata.json might be deprecated
         metadataJson =  json.dumps(data, indent=4)
-        xname = settings.STAGE+ "metadata/"+str(folder)+"/GLTENmetadata.json"
+        xname = settings.STAGE+ "metadata/"+str(folder)+"/GLTENmetadata.json"       
         fxname = open(xname,'w+')
         fxname.write(metadataJson)
         fxname.close()
         print("gltenmetadata.json saved in  = " + xname)
+        
+        
+        
         
         experiment = _prep1.prepareExperiment(data) 
         experimentJson =  json.dumps(experiment, indent=4)
@@ -130,6 +134,8 @@ def process(exptID):
         fxname.write(experimentJson)
         fxname.close()
         print("experiment.json saved in  = " + xname)
+        
+
           
         site = _prep1.prepareSite(data)
         siteJson =  json.dumps(site, indent=4)
@@ -171,6 +177,12 @@ def process(exptID):
         fxname.close()
         print("experiment.txt saved in  = " + xname) 
         
+        mkdwn =_prep1.prepMD(data)
+        xname = settings.STAGE+ "markdownvault/experiment-"+str(folder)+".md"
+        fxname = open(xname,'w+')
+        fxname.write(mkdwn)
+        fxname.close()
+        print("markdown file saved in  = " + xname) 
          
         images = _images2json.getImages(folder)
         xname = settings.STAGE+"metadata/"+str(folder)+"/images.json"   

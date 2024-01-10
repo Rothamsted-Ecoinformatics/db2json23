@@ -414,7 +414,7 @@ def prepareDesigns(data):
             description= details['description'],
             studyDesign= details['name'],
             factorCombinationNumber= details['number_of_factor_combinations'] if details['number_of_factor_combinations'] else 'NA',
-            numberOdBlocks = details['number_of_blocks'],
+            numberOfBlocks = details['number_of_blocks'],
             numberOfPlots= details['number_of_plots'],
             numberOfReplicates= details['number_of_replicates'],
             numberOfSubplots= details['number_of_subplots'],
@@ -517,10 +517,40 @@ def prepReadme(data):
  
     readme += f'EXPERIMENT DESIGN {newline}'
     
- 
-    
-    
     return readme
+
+def prepMD(data):
+    # horizontal line is ---
+    spacer  = ' '*len(data['name'])
+    newline = '\n'
+    folder = data['local_identifier'].replace('/','').lower()
+    readme = f''
+    readme += f"# {data['name']} ({data['local_identifier']})"   
+    readme += f'\n## DESCRIPTION'
+    if data['url']:
+        readme += f"\n{newline}**URL**:  [{data['url']}]"
+    readme += f"\n{data['description']}"
+    
+    readme += f"\n{data['objective']}"
+    
+    readme += f"\n- **Experiment start** = {data['start_year']}"
+    readme += f"\n- **Experiment end** = {data['end_year']}"
+
+    readme += f'\n---'
+
+    readme += f'\n## CONDITION OF ACCESS'
+
+    readme += f'\n---'
+
+    readme += f'\n## EXPERIMENT DESIGN'
+
+    readme += '\n---'
+
+    readme += f'\n## References'
+    for details in data['literature']:
+        readme += f"\n - [{details['doi']}]({details['title']})"
+    return readme
+
 def process(exptID):
     data = getData(exptID)
     

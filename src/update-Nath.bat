@@ -18,18 +18,26 @@ ECHO ...to era2023
 xcopy "d:\eRAWebStage\eraGilbert01\metadata" "\\INTRANET-SERVER\era\era2023\metadata" /s /i /f /y /d
 ECHO ...to Live
 xcopy "d:\eRAWebStage\eraGilbert01\metadata" "\\internet-serv2\newera\metadata" /s /i /f /y /d
+ECHO ...to Basset
+xcopy "d:\eRAWebStage\eraGilbert01\metadata" "\\basset\era\era2023\metadata" /s /i /f /y /d
 ECHO .
 ECHO UPDATING Repository
 ECHO ...to era2023
-xcopy "C:\Users\castells\Rothamsted Research\e-RA - Documents\Data-docs repository\metadata" "\\INTRANET-SERVER\era\era2023\metadata" /s /i /f /y /d
+xcopy "D:\OneDrive - Rothamsted Research\Documents - e-RA\Data-docs repository\metadata" "\\INTRANET-SERVER\era\era2023\metadata" /s /i /f /y /d
 ECHO ...to Live
-xcopy "C:\Users\castells\Rothamsted Research\e-RA - Documents\Data-docs repository\metadata" "\\internet-serv2\newera\metadata" /s /i /f /y /d
+xcopy "D:\OneDrive - Rothamsted Research\Documents - e-RA\Data-docs repository\metadata" "\\internet-serv2\newera\metadata" /s /i /f /y /d
+ECHO ...to Basset
+xcopy "D:\OneDrive - Rothamsted Research\Documents - e-RA\Data-docs repository\metadata" "\\basset\era\era2023\metadata" /s /i /f /y /d
+
 ECHO .
 ECHO UPDATING images
 xcopy "\\INTRANET-SERVER\era\era2023\images" "\\internet-serv2\newera\images" /s /i /f /y /d
+ECHO UPDATING images to Basset
+xcopy "\\INTRANET-SERVER\era\era2023\images" "\\basset\era\era2023\images" /s /i /f /y /d
 ECHO .
 ECHO UPDATING infofiles - only if they are already in destination
-xcopy "\\INTRANET-SERVER\era\era2023\metadata" "\\internet-serv2\newera\metadata" /s /i /f /y /u /d
+xcopy "\\INTRANET-SERVER\era\era2023\metadata\*.html" "\\internet-serv2\newera\metadata" /s /i /f /y /u /d
+xcopy "\\INTRANET-SERVER\era\era2023\metadata\*.html" "\\basset\era\era2023\metadata" /s /i /f /y /u /d
 GOTO END
 ::UPDATE
 

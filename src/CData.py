@@ -185,7 +185,7 @@ if __name__ == '__main__':
             typeOfDoc = '0'
             
             while typeOfDoc == '0':
-                answer = input('Texts (T) or Datasets (D)?').lower()
+                answer = input('Datasets (D) or Texts (T)?').lower()
                 print(answer)
                 if answer not in ['t', 'd']:
                     print ('t or d please')

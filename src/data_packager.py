@@ -214,7 +214,11 @@ for idx, row in rm.iterrows():
         resource_table = resource_table + "|" + a + ".csv|" + b + "|" + c + "|\n"
 
     elif part == 3 and str(a) != "nan":
-        sup_material = sup_material + "|" + a + "|[https://doi.org/" + b + "](https://doi.org/" + b + ")|" + c + "|\n"
+        if 'doi.org' in b: 
+            sup_material = sup_material + "|" + a + "|[" + b + "](" + b + ")|" + c + "|\n"
+        else: 
+            sup_material = sup_material + "|" + a + "|[https://doi.org/" + b + "](https://doi.org/" + b + ")|" + c + "|\n"
+            
 
 ## This gets the DataCite Metadata record
 ds = mdq.get_document_json(mdq_id)
@@ -240,10 +244,12 @@ with open(pkgpath + "README.txt", "w") as readme:
     description = ""
     for desc in ds["description"]:
         if desc["descriptionType"] != "TableOfContents":
-            description = description + "### " + camel_to_space(desc["descriptionType"]) + "\n" + desc["description"].strip() + "\n"
+            description = description + "### " + camel_to_space(desc["descriptionType"]) + "\n" 
+            description = description + desc["description"].strip() + "\n"
     pkg.description = description
     readme.writelines(description)
 
+    
     tblAuthor = "\n### Authors\n"+"|Name|ORCID|Affiliation|\n"+"|----|-----|-----------|\n"
     #readme.writelines("\n### Authors\n")
     #readme.writelines("|Name|ORCID|Affiliation|\n")
@@ -259,6 +265,8 @@ with open(pkgpath + "README.txt", "w") as readme:
     readme.writelines("|----|-----|----|-----------|\n")
     contributors = []
     for auth in ds["contributor"]:
+        # print (auth)
+        # print ('\n')
         if auth["type"] == "Person":
             readme.writelines("|" + str(auth["name"]) + "|<" + str(auth["sameAs"]) + ">|" + camel_to_space(str(auth["jobTitle"])) + "|" + str(auth["affiliation"]["name"]) + "|\n")
             contrib = {}
@@ -297,11 +305,11 @@ with open(pkgpath + "README.txt", "w") as readme:
             # print(fld.name)
             readme.writelines("|"+fld.name+"|"+fld.title+"|"+fld.type+"|"+fld.format)
             if fld.rdf_type:
-                readme.writelines("|"+fld.rdf_type)
+                readme.writelines("|["+fld.rdf_type+"]("+fld.rdf_type+")")
             else:
                 readme.writelines("|")
             if fld.description:
-                #print(fld.description)
+                # print(fld.description)
                 readme.writelines("|"+fld.description)
             else:
                 readme.writelines("|")

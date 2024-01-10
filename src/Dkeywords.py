@@ -122,12 +122,13 @@ def getDS(kw):
     cur = cnx.cursor()
     lsDS = []
     #select the keywords and the md_ids associated with that
-    sql = ''' select s.subject as subject, md.id , md.title, md.identifier, md.url,md.short_name, md.version, e.code 
+    sql = ''' select s.subject as subject, md.id , md.title, md.is_ready,  md.identifier, md.url,md.short_name, md.version, e.code 
      from subjects s
      inner join document_subjects ds on ds.subject_id = s.id 
      join metadata_documents md on md.id = ds.metadata_document_id 
      join experiments e on md.experiment_id = e.id 
      where md.general_resource_type_id = 4
+     and md.is_ready = 2
      and subject like '{}'  order by subject asc'''.format(kw)
     
     cur.execute(sql)
@@ -161,12 +162,13 @@ def getDOCS(kw):
     cur = cnx.cursor()
     lsDS = []
     #select the keywords and the md_ids associated with that
-    sql = ''' select s.subject as subject, md.id , md.title, md.identifier, md.url,md.short_name, md.version, e.code 
+    sql = ''' select s.subject as subject, md.id , md.title,md.is_ready,  md.identifier, md.url,md.short_name, md.version, e.code 
      from subjects s
      inner join document_subjects ds on ds.subject_id = s.id 
      join metadata_documents md on md.id = ds.metadata_document_id 
      join experiments e on md.experiment_id = e.id 
      where md.general_resource_type_id = 12
+     and md.is_ready = 2
      and subject like '{}'  order by subject asc'''.format(kw)
     
     cur.execute(sql)

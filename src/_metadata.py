@@ -12,9 +12,7 @@ This is used in CData to process the same thing for datasets and documents
 
 '''
 import sys
-
 import json
-
 import settings
 import AFolder
 import _connect
@@ -131,7 +129,7 @@ def prepareCreators(mdId):
         #print(person.asCreatorJson())
         creators.append(person.asCreatorJson())
         
-    # second prepare organisations
+    # ----   second prepare creator organisations --------  
     # corrected for 2023
     cur.execute("""select * 
                 from organisations o 
@@ -168,20 +166,9 @@ def prepareContributors(mdId):
         person = Person(row)
                
         contributors.append(person.asContributorJson())
-    # second prepare organisations
-    # corrected for db2json23 2023-04-28
-    cur.execute("""select distinct
-	                o.name,
-	                oc.metadata_document_id 
-                from
-	                (organisations o
-                    inner join organisation_creators oc  on
-	                o.id = oc.organisation_id)
-                where oc.metadata_document_id = ?""",mdId)
-    results = cur.fetchall()
-    for row in results:
-        #print("debug _metadata ln 244: ")
-        contributors.append({"sourceOrganisation": row.name}) 
+    # -----   second prepare organisations    ------------
+    # we do not record organisations as contributors - only as creators
+    # modified 2023-11-01 Nathcast
         
     return contributors    
     
@@ -550,6 +537,87 @@ def process(documentInfo):
     documentInfo.data = data    
     return documentInfo    
 
+def prepMD(documentInfo):
+    data = documentInfo.data
+    folder = documentInfo.folder      
+    # horizontal line is ---
+    newline = '\n  '
+    
+    readme = f''
+    readme += '\n  '
+    readme += f"# {data['name']} ({data['identifier']})  " 
+    readme += '\n' 
+    readme += f"## Experiment Code:  [[experiment-{folder}]]  "  
+    readme += '\n'
+    for item in data['description']:
+        readme += '\n  '
+        readme += '***'
+        readme += '\n  '
+        readme += '\n  '
+        readme += f"### {item['descriptionType']}  "
+        readme += '\n  '
+        readme += '\n  '
+        readme += f"{item['description']}  "
+    
+    return readme
+
+def prepRIS(documentInfo): 
+    data = documentInfo.data
+          
+    # horizontal line is ---
+    newline = '\n'
+    readme = f''
+    readme += f"TY  - DATA  " 
+    readme += newline 
+    readme += f"TI  - {data['name']} "
+    readme += newline
+    readme += f"CY  - {data['publisher']['name']} " 
+    readme += newline
+    readme += f"DB  - e-RA - the electronic Rothamsted Archive " 
+    readme += newline
+    readme += f"PY  - {data['publication_year']} "
+    readme += newline 
+    readme += f"DP  - Rothamsted Research, Harpenden, Herts, AL5 2JQ, UK. "    
+    readme += newline 
+    readme += f"M3  - {data['encodingFormat']} " 
+    readme += newline
+    readme += f"ET  - {data['version']} "
+    readme += newline 
+    readme += f"LA  - {data['inLanguage']} " 
+    readme += newline
+    readme += f"UR  - https://doi.org/{data['identifier']} "
+    readme += newline 
+    readme += f"DO  - {data['identifier']} "
+    authorPerson = ''
+    authorOrg = ''   
+    for item in data['creator']: 
+        if item['type'].lower() == 'person':
+            
+            authorPerson += newline
+            authorPerson += f"AU  - {item['familyName']}, {item['givenName']} "        
+        if item['type'].lower() == 'organization':
+            
+            authorOrg += newline
+            authorOrg += f"AU  - {item['name']}, "      
+    if  authorPerson == '':
+        readme += authorOrg
+    else: 
+        readme += authorPerson  
+    readme += newline
+    readme += f"KW  - " 
+    for item in data['keywords'] :
+        if 'KeyRef' not in item:
+            readme += f"{item}, "
+        
+    for item in data['description'] : 
+        if item['descriptionType'] == 'Abstract':
+            readme += newline
+            readme += f"AB  - {item['description']} "
+    readme += newline         
+    readme += f"ER  -  " 
+    
+    return readme
+
 def save(documentInfo): 
     #print("debug _metadata ln 612: doing save")
     if documentInfo.data['@type'][0].lower() == "t":
@@ -577,7 +645,20 @@ def save(documentInfo):
     fxname.write(strJsDoc)
     fxname.close()
    
-    #print('json document saved in '+ xname)
+    mkdwn =prepMD(documentInfo)
+    mdname = settings.STAGE+ 'markdownvault/dataset-'+documentInfo.folder+'-'+ strVersion + "-" + str(documentInfo.shortName) +".md"
+    fxname = open(mdname,'w+')
+    fxname.write(mkdwn)
+    fxname.close()
+    print("markdown file saved in  = " + mdname) 
+    
+    risRef =prepRIS(documentInfo)
+    risname = dirname +"/"+ strVersion + "-" + str(documentInfo.shortName) +".ris"
+    fxname = open(risname,'w+')
+    fxname.write(risRef)
+    fxname.close()
+    print("ris file saved in  = " + risname)
+    
     
     
 def getDOCIDs():
@@ -606,6 +687,8 @@ def get_document_json(dataset_id):
     documentInfo = process(documentInfo)
     ##print(json.dumps(documentInfo.data, indent=4))
     return documentInfo.data
+
+
 
 def makeDocumentInfo(dataset_id):
     
