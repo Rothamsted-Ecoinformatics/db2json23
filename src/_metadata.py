@@ -332,7 +332,7 @@ def prepareSizes(mdId):
             sizes.append(str(row.size_value) + ' ' + row.unit_short_name)
         
     return sizes
-
+# 2024-02-07 added aknwoledgmentText
 def prepareFundingReferences(mdId):
     cnx = _connect.connect()
     cur = cnx.cursor()
@@ -342,6 +342,7 @@ def prepareFundingReferences(mdId):
 	fa.reference_number ,
 	fa.uri ,
 	fa.title,
+    fa.aknowlegmentText,
 	o.name,
 	o.funder_identifier,
 	o.funder_identifier_type
@@ -362,7 +363,8 @@ where
                "name": row.name,
                "sameAs": row.funder_identifier,
                "award":  row.reference_number + ' - ' + row.title,
-               "identifier": row.uri
+               "identifier": row.uri,
+               "description": row.aknowlegmentText
             }
         )
         
@@ -618,6 +620,63 @@ def prepRIS(documentInfo):
     
     return readme
 
+
+def prepENW(documentInfo): 
+    data = documentInfo.data
+          
+    # horizontal line is ---
+    newline = '\n'
+    readme = f''
+    readme += f"%0 Dataset" 
+    readme += newline 
+    readme += f"%T {data['name']} "
+    readme += newline
+    readme += f"%I {data['publisher']['name']} " 
+    readme += newline
+    readme += f"%W e-RA - the electronic Rothamsted Archive " 
+    readme += newline
+    readme += f"%D {data['publication_year']} "
+    readme += newline 
+    readme += f"%C Rothamsted Research, Harpenden, Herts, AL5 2JQ, UK. "    
+    readme += newline 
+    readme += f"%9 {data['encodingFormat']} " 
+    readme += newline
+    readme += f"%7 {data['version']} "
+    readme += newline 
+    readme += f"%G {data['inLanguage']} " 
+    readme += newline
+    readme += f"%U https://doi.org/{data['identifier']} "
+    readme += newline 
+    readme += f"%R {data['identifier']} "
+    authorPerson = ''
+    authorOrg = ''   
+    for item in data['creator']: 
+        if item['type'].lower() == 'person':
+            
+            authorPerson += newline
+            authorPerson += f"%A {item['familyName']}, {item['givenName']} "        
+        if item['type'].lower() == 'organization':
+            
+            authorOrg += newline
+            authorOrg += f"%A {item['name']}, "      
+    if  authorPerson == '':
+        readme += authorOrg
+    else: 
+        readme += authorPerson  
+    readme += newline
+    readme += f"%K " 
+    for item in data['keywords'] :
+        if 'KeyRef' not in item:
+            readme += f"{item}; "
+        
+    for item in data['description'] : 
+        if item['descriptionType'] == 'Abstract':
+            readme += newline
+            readme += f"%X {item['description']} "
+    readme += newline         
+    
+    return readme
+
 def save(documentInfo): 
     #print("debug _metadata ln 612: doing save")
     if documentInfo.data['@type'][0].lower() == "t":
@@ -652,13 +711,19 @@ def save(documentInfo):
     fxname.close()
     print("markdown file saved in  = " + mdname) 
     
+    enwRef =prepENW(documentInfo)
+    enwname = dirname +"/"+ strVersion + "-" + str(documentInfo.shortName) +".enw"
+    fxname = open(enwname,'w+')
+    fxname.write(enwRef)
+    fxname.close()
+    print("endnote file saved in  = " + enwname)
+
     risRef =prepRIS(documentInfo)
     risname = dirname +"/"+ strVersion + "-" + str(documentInfo.shortName) +".ris"
     fxname = open(risname,'w+')
     fxname.write(risRef)
     fxname.close()
-    print("ris file saved in  = " + risname)
-    
+    print("ris file saved in  = " + risname)   
     
     
 def getDOCIDs():

@@ -400,7 +400,7 @@ def prepareDesigns(data):
         preparedmeasurements = prepareMeasurements(details['measurements']) if details['measurements'] else "NA"
         
         designs.append(dict ( 
-            administrative= dict( 
+        administrative = dict( 
             type= "experiment",
             identifier= details['name'],
             localIdentifier= details['name'],
@@ -408,10 +408,12 @@ def prepareDesigns(data):
             url= details['name'],
             description= str(details['design_description']) if details['design_description'] else ''  + str(details['description']) if details['description'] else ''
         ),
-        design= dict( 
+        design = dict( 
             dateStart= details['start_year'],
             dateEnd= details['end_year'],
             description= details['description'],
+            designType = details['design_type_term'],
+            designTypeLabel = details['design_type_label'],
             studyDesign= details['name'],
             factorCombinationNumber= details['number_of_factor_combinations'] if details['number_of_factor_combinations'] else 'NA',
             numberOfBlocks = details['number_of_blocks'],
