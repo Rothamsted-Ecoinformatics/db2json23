@@ -339,6 +339,7 @@ def prepareFundingReferences(mdId):
     fundingreferences = []
     # checked and  corrected 2023-04-28
     cur.execute("""    select
+    df.comment,
 	fa.reference_number ,
 	fa.uri ,
 	fa.title,
@@ -359,15 +360,19 @@ where
     for row in results:
         fundingreferences.append(
            {
-               "type": "organization",
-               "name": row.name,
-               "sameAs": row.funder_identifier,
-               "award":  row.reference_number + ' - ' + row.title,
-               "identifier": row.uri,
-               "description": row.aknowlegmentText
+               "type": "Grant",
+               "name": row.title,
+               "alternateName":  row.reference_number,
+               "url": row.uri,
+               "description": row.aknowlegmentText,
+               "disambiguatingDescription": row.comment,
+               "funder": {
+                    "type": "organization",
+                    "name": row.name,
+                    "url": row.funder_identifier,
+                },
             }
-        )
-        
+        )   
     return fundingreferences
 
 def prepareDistribution(mdId):
@@ -525,7 +530,7 @@ def process(documentInfo):
                      'name': mdRow.field_name            
                  },
               'relatedIdentifier': prepareRelatedIdentifiers(mdId),
-              'funder' : prepareFundingReferences(mdId),
+              'funding' : prepareFundingReferences(mdId),
               'distribution' : prepareDistribution(mdId),
               'image' : prepareIllustration(mdId),
              'grade': mdRow.grade if mdRow.grade   else 1,
@@ -565,7 +570,11 @@ def prepMD(documentInfo):
 
 def prepRIS(documentInfo): 
     data = documentInfo.data
-          
+    realURL = f"UR  - https://doi.org/{data['identifier']} "
+    if '10.' in data['identifier']:
+        realURL = f"UR  - https://doi.org/{data['identifier']} "
+    else:  
+        realURL = f"UR  - {data['url']} "
     # horizontal line is ---
     newline = '\n'
     readme = f''
@@ -587,7 +596,7 @@ def prepRIS(documentInfo):
     readme += newline 
     readme += f"LA  - {data['inLanguage']} " 
     readme += newline
-    readme += f"UR  - https://doi.org/{data['identifier']} "
+    readme += realURL
     readme += newline 
     readme += f"DO  - {data['identifier']} "
     authorPerson = ''
@@ -623,7 +632,12 @@ def prepRIS(documentInfo):
 
 def prepENW(documentInfo): 
     data = documentInfo.data
-          
+      
+    realURL = f"%U https://doi.org/{data['identifier']} "
+    if '10.' in data['identifier']:
+        realURL = f"%U https://doi.org/{data['identifier']} "
+    else:  
+        realURL = f"%U  - {data['url']} "    
     # horizontal line is ---
     newline = '\n'
     readme = f''
@@ -645,7 +659,7 @@ def prepENW(documentInfo):
     readme += newline 
     readme += f"%G {data['inLanguage']} " 
     readme += newline
-    readme += f"%U https://doi.org/{data['identifier']} "
+    readme += realURL
     readme += newline 
     readme += f"%R {data['identifier']} "
     authorPerson = ''
