@@ -21,7 +21,8 @@ EXPERIMENTS: list experiment that need a folder but have no GLTENID
 #REPO    = config['STAGE']['REPO']
 
 
-STAGE = "d:/eRAWebStage/eraGilbert01/" 
+#STAGE = "d:/eRAWebStage/eraGilbert01/" 
+STAGE = "d:/eRAWebStage/eraGilbert-DEV/"
 REPO = "d:/eRAWebRepo/repo08/"
 ROOT = "http://local-info.rothamsted.ac.uk/eRA/era2023/"
 INTRA = 'P://era2023/'
@@ -60,6 +61,9 @@ def bye():
     print ("  \  '-......-'  / ")
     print ("   '.          .' ")
     print ("     '-......-' ")
+    print (" ")
+    print (" ")
+    print (" ")
 
 
 if __name__ == '__main__':

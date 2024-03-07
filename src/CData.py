@@ -115,8 +115,8 @@ def getDatasets(typeOfDoc = 'Dataset', expt_code = 'R/BK/1'):
     lsDatasets =  []
     
     sql = '''select * from vw_met_docs where grt_value = \'{}\' and  experiment_code LIKE \'{}\' order by grade desc, title asc'''.format(typeOfDoc, expt_code)
-    print("debug CData 112")
-    print(sql)
+    #print("debug CData 112")
+    #print(sql)
     cur.execute(sql)
     
     results = cur.fetchall() 
@@ -132,14 +132,14 @@ def getDatasets(typeOfDoc = 'Dataset', expt_code = 'R/BK/1'):
 def makeDatasetList(typeOfDoc,expt_code):
     
     lsDatasets = getDatasets(typeOfDoc,expt_code)
-    #debug _metadata 137
+    #debug _metadata 135
     #print(lsDatasets)
     folder = ''.join(ch for ch in expt_code if ch.isalnum()).lower()
     xname = settings.STAGE+ "metadata/"+str(folder)+"/"+typeOfDoc.lower()+"s.json"
     fxname = open(xname,'w+')
     strDatasets =  json.dumps(lsDatasets, indent=4)
-    #debug _metadata 143
-    #print(strDatasets)
+    print('debug _metadata 143')
+    print(strDatasets)
     fxname.write(strDatasets)
     fxname.close()
     print('list of '+typeOfDoc+' saved in '+xname)
