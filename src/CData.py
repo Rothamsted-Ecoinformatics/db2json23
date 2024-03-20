@@ -124,7 +124,8 @@ def getDatasets(typeOfDoc = 'Dataset', expt_code = 'R/BK/1'):
     for row in results: 
         dt = Dataset(row)       
         lsDatasets.append(dt.asdatasetJson()) 
-        _metadata.makeDocumentInfo(str(dt.md_id)) 
+        documentInfo =_metadata.makeDocumentInfo(str(dt.md_id)) 
+        _metadata.save(documentInfo)
     print(lsDatasets)
     return lsDatasets
 
@@ -138,8 +139,8 @@ def makeDatasetList(typeOfDoc,expt_code):
     xname = settings.STAGE+ "metadata/"+str(folder)+"/"+typeOfDoc.lower()+"s.json"
     fxname = open(xname,'w+')
     strDatasets =  json.dumps(lsDatasets, indent=4)
-    print('debug _metadata 143')
-    print(strDatasets)
+    #print('debug _metadata 143')
+    #print(strDatasets)
     fxname.write(strDatasets)
     fxname.close()
     print('list of '+typeOfDoc+' saved in '+xname)

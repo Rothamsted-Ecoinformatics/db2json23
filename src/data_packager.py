@@ -282,12 +282,37 @@ with open(pkgpath + "README.txt", "w") as readme:
     pkg.licenses = [{"name":"CC-BY-4.0","path":"https://creativecommons.org/licenses/by/4.0/","title":"Creative Commons Attribution 4.0 International"}]
     readme.writelines("\n**Cite this Dataset**\n:    " + cite_as + "\n")
     readme.writelines("\n**Conditions of Use**\n:    Rothamsted relies on the integrity of users to ensure that Rothamsted Research receives suitable acknowledgment as being the originators of these data. This enables us to monitor the use of each dataset and to demonstrate their value. Please send us a link to any publication that uses this Rothamsted data.\n")
-    
+
     readme.writelines("\n### Funding\n")
-    for fund in ds["funder"]:
-        readme.writelines("\n**Funder name**\n:    [" + fund["name"] + "](" + fund["sameAs"] + ")\n")
-        readme.writelines("\n**Award**\n:    " + fund["award"] + "\n")
-        readme.writelines("\n**Award info**\n:    [" + fund["sameAs"] + "](" + fund["name"] + ")\n")
+    readme.writelines("\n")
+    readme.writelines("The RLTE-NBRI is funded by UK Research and Innovation - Biotechnology and Biological Sciences Research Council (UKRI-BBSRC) under award BBS/E/RH/23NB0007 (2023-2028). The RLTE-NBRI is also supported by the Lawes Agricultural Trust. e-RA has been part of a National Capability since 2012, previous awards from the BBSRC were Grants BBS/E/C/00005189 (2012-2017) and BBS/E/C/000J0300 (2017-2022)")
+    readme.writelines("\n")
+    readme.writelines("\n")
+    readme.writelines("\n")
+    readme.writelines("isExternal = "+ str(ds['isExternal']))
+    readme.writelines("\n")
+    readme.writelines("\n### Additional Funding\n")
+    readme.writelines("|Grant Name|Grant Number|Funder|Work Package|\n")
+    readme.writelines("|----|-----|----|-----------|\n")
+    readme.writelines("|NBRI - provide Grant name|LAT GRANT NUMBER?|[Lawes Agricultura Trust](https://lawestrust.org/) | N/A |\n")
+   
+    for fund in ds["funding"]:
+        grantNumber = "" 
+        if fund["url"]:
+            grantNumber = "[" + fund["alternateName"] + "](" + fund["url"] + ")"
+        else:
+            grantNumber = fund["alternateName"] 
+        workPackages = "N/A"
+        if fund["disambiguatingDescription"]: 
+            workPackages = fund["disambiguatingDescription"]
+
+        readme.writelines("|" + str(fund["name"]) + "|" + grantNumber + "|[" + fund["funder"]["name"] + "](" + fund["funder"]["url"] + ") | " + workPackages + "|\n")
+   
+        # readme.writelines("\n**Funder name**\n:    [" + fund["funder"]["name"] + "](" + fund["funder"]["url"] + ")\n")
+        # readme.writelines("\n**Award**\n:    " + fund["name"] + "\n")
+        # readme.writelines("\n**Award info**\n:    " )
+
+    #pkg.funding = funding
     readme.writelines("\n")
 
     readme.writelines(sup_material)
