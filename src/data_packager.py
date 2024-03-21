@@ -285,13 +285,7 @@ with open(pkgpath + "README.txt", "w") as readme:
 
     readme.writelines("\n### Funding\n")
     readme.writelines("\n")
-    readme.writelines("The RLTE-NBRI is funded by UK Research and Innovation - Biotechnology and Biological Sciences Research Council (UKRI-BBSRC) under award BBS/E/RH/23NB0007 (2023-2028). The RLTE-NBRI is also supported by the Lawes Agricultural Trust. e-RA has been part of a National Capability since 2012, previous awards from the BBSRC were Grants BBS/E/C/00005189 (2012-2017) and BBS/E/C/000J0300 (2017-2022)")
     readme.writelines("\n")
-    readme.writelines("\n")
-    readme.writelines("\n")
-    readme.writelines("isExternal = "+ str(ds['isExternal']))
-    readme.writelines("\n")
-    readme.writelines("\n### Additional Funding\n")
     readme.writelines("|Grant Name|Grant Number|Funder|Work Package|\n")
     readme.writelines("|----|-----|----|-----------|\n")
     for fund in ds["funding"]:
