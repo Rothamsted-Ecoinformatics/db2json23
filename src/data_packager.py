@@ -294,8 +294,6 @@ with open(pkgpath + "README.txt", "w") as readme:
     readme.writelines("\n### Additional Funding\n")
     readme.writelines("|Grant Name|Grant Number|Funder|Work Package|\n")
     readme.writelines("|----|-----|----|-----------|\n")
-    readme.writelines("|NBRI - provide Grant name|LAT GRANT NUMBER?|[Lawes Agricultura Trust](https://lawestrust.org/) | N/A |\n")
-   
     for fund in ds["funding"]:
         grantNumber = "" 
         if fund["url"]:
