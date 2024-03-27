@@ -297,7 +297,7 @@ with open(pkgpath + "README.txt", "w") as readme:
         workPackages = "N/A"
         if fund["disambiguatingDescription"]: 
             workPackages = fund["disambiguatingDescription"]
-
+            
         readme.writelines("|" + str(fund["name"]) + "|" + grantNumber + "|[" + fund["funder"]["name"] + "](" + fund["funder"]["url"] + ") | " + workPackages + "|\n")
    
         # readme.writelines("\n**Funder name**\n:    [" + fund["funder"]["name"] + "](" + fund["funder"]["url"] + ")\n")
@@ -306,6 +306,10 @@ with open(pkgpath + "README.txt", "w") as readme:
 
     #pkg.funding = funding
     readme.writelines("\n")
+    # we add the LAT line for the internal datasets
+    if ds['isExternal'] == 0 : 
+        readme.writelines("\nThe RLTE-NBRI is also supported by the Lawes Agricultural Trust.")
+        readme.writelines("\n")
 
     readme.writelines(sup_material)
 
