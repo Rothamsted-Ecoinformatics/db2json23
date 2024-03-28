@@ -12,15 +12,11 @@ def camel_to_space(val):
     return re.sub(r'([a-z])([A-Z])', r'\1 \2',val)
 
 
-# filename = '01-WLTLSOIL.xlsx'
-# mdq_id = "62"
-# id = "https://doi.org/10.23637/wcs10-soil-01"
-
 print ("--- have your xls file ready in a D:\code\data\ folder ---- ")
 
 filename = input ("Filename including extension: ")
 mdq_id = input ("metadata document ID (find this in the eracuration): ")
-id = "http://doi.org/"+input ("DOI: ")
+id = "https://doi.org/"+input ("DOI: ")
 
 
 #----------------------Code after this -------------------------------------
@@ -289,6 +285,17 @@ with open(pkgpath + "README.txt", "w") as readme:
     readme.writelines("|Grant Name|Grant Number|Funder|Work Package|\n")
     readme.writelines("|----|-----|----|-----------|\n")
     for fund in ds["funding"]:
+        prefixes = ['https:','ror.org', 'doi.org']
+        funder_id = ""
+        funder_id_type = ""
+        strList = fund["funder"]["identifier"].split('/')
+        for item in strList:
+            if item == 'ror.org': 
+                funder_id_type = ' -  ROR_ID = '
+            if item == 'doi.org': 
+                funder_id_type = ' -  DOI = '    
+            if item not in prefixes: 
+                funder_id += item
         grantNumber = "" 
         if fund["url"]:
             grantNumber = "[" + fund["alternateName"] + "](" + fund["url"] + ")"
@@ -298,7 +305,7 @@ with open(pkgpath + "README.txt", "w") as readme:
         if fund["disambiguatingDescription"]: 
             workPackages = fund["disambiguatingDescription"]
             
-        readme.writelines("|" + str(fund["name"]) + "|" + grantNumber + "|[" + fund["funder"]["name"] + "](" + fund["funder"]["url"] + ") | " + workPackages + "|\n")
+        readme.writelines("|" + str(fund["name"]) + "|" + grantNumber + "|[" + fund["funder"]["name"] + "](" + fund["funder"]["url"] + ")"+ funder_id_type +funder_id + " | " + workPackages + "|\n")
    
         # readme.writelines("\n**Funder name**\n:    [" + fund["funder"]["name"] + "](" + fund["funder"]["url"] + ")\n")
         # readme.writelines("\n**Award**\n:    " + fund["name"] + "\n")

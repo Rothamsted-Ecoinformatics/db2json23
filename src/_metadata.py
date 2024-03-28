@@ -346,6 +346,7 @@ def prepareFundingReferences(mdId):
     fa.aknowlegmentText,
 	o.name,
 	o.funder_identifier,
+    o.org_URL,
 	o.funder_identifier_type
 from
 	(document_funders df
@@ -358,6 +359,8 @@ where
 
     results = cur.fetchall()
     for row in results:
+        # I have added the URL to the organisation and replaced the previsou URL with identifier 
+        # see datapackager.py for a neat way to make the identifiers neater
         fundingreferences.append(
            {
                "type": "Grant",
@@ -369,7 +372,8 @@ where
                "funder": {
                     "type": "organization",
                     "name": row.name,
-                    "url": row.funder_identifier,
+                    "url" : row.org_URL,
+                    "identifier": row.funder_identifier,
                 },
             }
         )   
