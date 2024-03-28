@@ -346,6 +346,7 @@ def prepareFundingReferences(mdId):
     fa.aknowlegmentText,
 	o.name,
 	o.funder_identifier,
+    o.org_URL,
 	o.funder_identifier_type
 from
 	(document_funders df
@@ -358,6 +359,8 @@ where
 
     results = cur.fetchall()
     for row in results:
+        # I have added the URL to the organisation and replaced the previsou URL with identifier 
+        # see datapackager.py for a neat way to make the identifiers neater
         fundingreferences.append(
            {
                "type": "Grant",
@@ -369,7 +372,8 @@ where
                "funder": {
                     "type": "organization",
                     "name": row.name,
-                    "url": row.funder_identifier,
+                    "url" : row.org_URL,
+                    "identifier": row.funder_identifier,
                 },
             }
         )   
@@ -718,13 +722,15 @@ def save(documentInfo):
     fxname.write(strJsDoc)
     fxname.close()
    
-    mkdwn =prepMD(documentInfo)
-    mdname = settings.STAGE+ 'markdownvault/dataset-'+documentInfo.folder+'-'+ strVersion + "-" + str(documentInfo.shortName) +".md"
-    fxname = open(mdname,'w+')
-    fxname.write(mkdwn)
-    fxname.close()
-    print("markdown file saved in  = " + mdname) 
+    # Creates Markdown Files
+    # mkdwn =prepMD(documentInfo)
+    # mdname = settings.STAGE+ 'markdownvault/dataset-'+documentInfo.folder+'-'+ strVersion + "-" + str(documentInfo.shortName) +".md"
+    # fxname = open(mdname,'w+')
+    # fxname.write(mkdwn)
+    # fxname.close()
+    # print("markdown file saved in  = " + mdname) 
     
+    # Creates ENW files
     enwRef =prepENW(documentInfo)
     enwname = dirname +"/"+ strVersion + "-" + str(documentInfo.shortName) +".enw"
     fxname = open(enwname,'w+')
@@ -732,6 +738,7 @@ def save(documentInfo):
     fxname.close()
     print("endnote file saved in  = " + enwname)
 
+    # Creates Reference software files
     risRef =prepRIS(documentInfo)
     risname = dirname +"/"+ strVersion + "-" + str(documentInfo.shortName) +".ris"
     fxname = open(risname,'w+')
@@ -770,13 +777,14 @@ def get_document_json(dataset_id):
 
 
 def makeDocumentInfo(dataset_id):
-    
     documentInfo = DocumentInfo()  
     documentInfo.mdId = dataset_id
     #print("Debug _metadata ln 664")
     #print(documentInfo.mdId)
     documentInfo = process(documentInfo)
-    save(documentInfo)
+    return documentInfo
+    
+    
     
 if __name__ == '__main__':
     try:
@@ -814,7 +822,8 @@ if __name__ == '__main__':
                     datasetID = IDs[inToken]
                 #print(datasetID)
             
-            makeDocumentInfo(datasetID)
+            documentInfo = makeDocumentInfo(datasetID)
+            save(documentInfo)
             
             new_game = input("Would you like to do another one? Enter 'y' or 'n' ")
             if new_game[0].lower()=='y':

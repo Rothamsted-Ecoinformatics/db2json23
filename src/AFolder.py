@@ -201,6 +201,16 @@ if __name__ == '__main__':
         status = " already here"
     print (newDir + status)
     
+    newDir = stage+'markdownvault'
+    if not os.path.isdir(newDir):
+        os.makedirs(newDir,  exist_ok = True)
+        os.chmod(newDir, stat.S_IRWXO)
+        status = " created"
+    else: 
+        os.chmod(newDir, stat.S_IRWXO)
+        status = " already here"
+    print (newDir + status)
+    
     results = getExperiments()
     expts = makeJSON(results)
     strJsonExpts =  json.dumps(expts, indent=4)
@@ -213,7 +223,7 @@ if __name__ == '__main__':
     dirs = makedirectories(results)   
     copyStr = []
      
-    print(strJsonExpts)
+    #print(strJsonExpts)
     print("-----Directory Creation-----")
     print(dirs)
     

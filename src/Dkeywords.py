@@ -60,7 +60,7 @@ def getPAGES(kw):
     
     # for the files in the lists: open the files in turn Try with 1
     # the list of pages: 
-    with open('d:/eRAWebStage/eraGilbert01/metadata/default/infofiles.json', 'r') as myfiles:
+    with open('d:/eRAWebStage/eraGilbert03/metadata/default/infofiles.json', 'r') as myfiles:
         files=myfiles.read()
         
     obj = json.loads(files)
