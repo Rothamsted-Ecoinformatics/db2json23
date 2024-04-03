@@ -15,11 +15,11 @@ GOTO END
 :UPDATE
 ECHO UPDATING metadata  
 ECHO ...to era2023
-xcopy "d:\eRAWebStage\eraGilbert03\metadata" "\\INTRANET-SERVER\era\era2023\metadata" /s /i /f /y /d
+xcopy "d:\eRAWebStage\eraGilbert05\metadata" "\\INTRANET-SERVER\era\era2023\metadata" /s /i /f /y /d
 ECHO ...to Live
-xcopy "d:\eRAWebStage\eraGilbert03\metadata" "\\internet-serv2\newera\metadata" /s /i /f /y /d
+xcopy "d:\eRAWebStage\eraGilbert05\metadata" "\\internet-serv2\newera\metadata" /s /i /f /y /d
 ECHO ...to Basset
-xcopy "d:\eRAWebStage\eraGilbert03\metadata" "\\basset\era\era2023\metadata" /s /i /f /y /d
+xcopy "d:\eRAWebStage\eraGilbert05\metadata" "\\basset\era\era2023\metadata" /s /i /f /y /d
 ECHO .
 ECHO UPDATING Repository
 ECHO ...to era2023
