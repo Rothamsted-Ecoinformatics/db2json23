@@ -170,19 +170,19 @@ def process(exptID):
         fxname.close()
         print("orgs.json saved in  = " + xname)
         
-        readme =_prep1.prepReadme(data)
-        xname = settings.STAGE+ "metadata/"+str(folder)+"/experiment.txt"
-        fxname = open(xname,'w+')
-        fxname.write(readme)
-        fxname.close()
-        print("experiment.txt saved in  = " + xname) 
+        # readme =_prep1.prepReadme(data)
+        # xname = settings.STAGE+ "metadata/"+str(folder)+"/experiment.txt"
+        # fxname = open(xname,'w+')
+        # fxname.write(readme)
+        # fxname.close()
+        # print("experiment.txt saved in  = " + xname) 
         
-        mkdwn =_prep1.prepMD(data)
-        xname = settings.STAGE+ "markdownvault/experiment-"+str(folder)+".md"
-        fxname = open(xname,'w+')
-        fxname.write(mkdwn)
-        fxname.close()
-        print("markdown file saved in  = " + xname) 
+        # mkdwn =_prep1.prepMD(data)
+        # xname = settings.STAGE+ "markdownvault/experiment-"+str(folder)+".md"
+        # fxname = open(xname,'w+')
+        # fxname.write(mkdwn)
+        # fxname.close()
+        # print("markdown file saved in  = " + xname) 
          
         images = _images2json.getImages(folder)
         xname = settings.STAGE+"metadata/"+str(folder)+"/images.json"   

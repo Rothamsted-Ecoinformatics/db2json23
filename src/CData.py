@@ -126,7 +126,7 @@ def getDatasets(typeOfDoc = 'Dataset', expt_code = 'R/BK/1'):
         lsDatasets.append(dt.asdatasetJson()) 
         documentInfo =_metadata.makeDocumentInfo(str(dt.md_id)) 
         _metadata.save(documentInfo)
-    print(lsDatasets)
+    #print(lsDatasets)
     return lsDatasets
 
 
