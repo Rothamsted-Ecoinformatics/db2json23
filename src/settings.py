@@ -24,8 +24,9 @@ EXPERIMENTS: list experiment that need a folder but have no GLTENID
 STAGE = "D:/eRAWebStage/eraGilbert05/" 
 #STAGE = "d:/eRAWebStage/eraGilbert-DEV/"
 REPO = "D:/eRAWebRepo/repo08/"
-ROOT = "http://local-info.rothamsted.ac.uk/eRA/era2023/"
+ROOT = "https://newlocal-info.rothamsted.ac.uk/eRA/era2023/"
 INTRA = 'P://era2023/'
+BASSET = 'N://era2023/'
 
 DEFAULT = "metadata/default/"
 IMAGES = "images/metadata"
@@ -35,7 +36,7 @@ DEFAULTDIR = STAGE+DEFAULT
 
 toConvert = {
                 'infofiles' : {
-                    'csvFilePath': INTRA+DEFAULT+'infofiles.csv',
+                    'csvFilePath': BASSET+DEFAULT+'infofiles.csv',
                     'jsonFilePath': DEFAULTDIR+'infofiles.json',
                     'idKey' : 'id'
                         }

@@ -21,15 +21,15 @@ def getStored():
     # 2: Make a list of the file Locations of images stored on the INTRANET drive (metadata) 
     imStored = []
     avoid = ['.xls', '.txt', '.AVI', '.mp4', 'docx', '.csv']
-    # readDir = 'P:/era2023/images/metadata/'
-    readDir = settings.INTRA+settings.IMAGES
+    # readDir = 'N:/era2023/images/metadata/'
+    readDir = settings.BASSET+settings.IMAGES
     for path, directories, files in os.walk(readDir):
         for file in files:
             passed = 'yes'
             if any(x in file for x in avoid): 
                 passed = 'no'
             if passed == 'yes':
-                imStored.append(path.replace('\\','/').replace('P://era2023/images/','') +'/'+ file)
+                imStored.append(path.replace('\\','/').replace('N://era2023/images/','') +'/'+ file)
     return imStored 
                        
                 
@@ -46,7 +46,7 @@ def getProperties(image):
     # we get the file name, extract the caption from the file name the image dimensions, 
     # the experiment code from the path, and so on"""
     print(image)
-    folder =  'P:/era2023/images/'
+    folder =  'N:/era2023/images/'
     imagefile = os.path.join(folder,  image)
     img = Image.open(imagefile)
     width = img.width
@@ -144,12 +144,12 @@ if __name__ == '__main__':
     print ("---- {} images in the database eraGilbert --------------".format(len(dbLoc)))
     print ("\n\n ")
     
-    # 2: Make a list of the file Locations of images stored on the INTRANET drive (metadata) 
+    # 2: Make a list of the file Locations of images stored on the BASSET drive (metadata) 
     stLoc = getStored()
     for loc in stLoc: 
         print(loc)
     
-    play = input ("---- {} images in the INTRANET drive --------------".format(len(stLoc)))
+    play = input ("---- {} images in the BASSET drive --------------".format(len(stLoc)))
 
     
     
