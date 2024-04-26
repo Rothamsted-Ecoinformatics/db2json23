@@ -60,7 +60,7 @@ def getPAGES(kw):
     
     # for the files in the lists: open the files in turn Try with 1
     # the list of pages: 
-    with open('d:/eRAWebStage/eraGilbert03/metadata/default/infofiles.json', 'r') as myfiles:
+    with open('D:/eRAWebStage/eraGilbert05/metadata/default/infofiles.json', 'r') as myfiles:
         files=myfiles.read()
         
     obj = json.loads(files)
@@ -74,7 +74,7 @@ def getPAGES(kw):
         # "isReviewed": 0
         #P:\era2018-new\metadata\met/
         if obj[fileItem]['isReviewed'] == '1':
-            fileString = "P:\\\\era2018-new\\metadata\\"+obj[fileItem]['exptID']+"\\"+obj[fileItem]['FileName']+'.'+obj[fileItem]['Type']
+            fileString = "N:\\\\era2023\\metadata\\"+obj[fileItem]['exptID']+"\\"+obj[fileItem]['FileName']+'.'+obj[fileItem]['Type']
             try: 
                 file1 = open(fileString, "r")
                # setting flag and index to 0

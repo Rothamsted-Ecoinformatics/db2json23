@@ -1,11 +1,12 @@
 @echo off
 :BEGIN
 CLS
-CHOICE /N /C:123 /M "Who is this?  (1(margaret), 2(Nathalie), or 3(Sarah))"%1
-IF ERRORLEVEL ==3 GOTO SARAH
+CHOICE /N /C:123 /M "Who is this?  ( 1(Sarah), 2(Nathalie), 3(Margaret),)"%1
+IF ERRORLEVEL ==3 GOTO MARGARET
 IF ERRORLEVEL ==2 GOTO NATHALIE
-IF ERRORLEVEL ==1 GOTO MARGARET
+IF ERRORLEVEL ==1 GOTO SARAH
 GOTO END
+
 :MARGARET
 ECHO YOU HAVE PRESSED MARGARET
 CHOICE /C YN /M "Is this ok? (Y or N)"%1
@@ -15,14 +16,15 @@ IF ERRORLEVEL ==1 GOTO UPDATEM
 :UPDATEM
 ECHO UPDATING Repository - MARGARET
 ECHO ...to era2023
-::xcopy "C:\Users\glendin\Rothamsted Research\e-RA - Documents\Data-docs repository\metadata" "\\INTRANET-SERVER\era\era2023\metadata" /s /i /f /y /d
+xcopy "C:\Users\glendin\Rothamsted Research\e-RA - Documents\Data-docs repository\metadata" "\\INTRANET-SERVER\era\era2023\metadata" /s /i /f /y /d
 ECHO ...to Live
-::xcopy "C:\Users\glendin\Rothamsted Research\e-RA - Documents\Data-docs repository\metadata" "\\internet-serv2\newera\metadata" /s /i /f /y /d
+xcopy "C:\Users\glendin\Rothamsted Research\e-RA - Documents\Data-docs repository\metadata" "\\internet-serv2\newera\metadata" /s /i /f /y /d
 ECHO ...to Basset
-::xcopy "C:\Users\glendin\Rothamsted Research\e-RA - Documents\Data-docs repository\metadata" "\\basset\era\era2023\metadata" /s /i /f /y /d
+xcopy "C:\Users\glendin\Rothamsted Research\e-RA - Documents\Data-docs repository\metadata" "\\basset\era\era2023\metadata" /s /i /f /y /d
 ECHO .
 GOTO NEXT
 ::UPDATEM
+
 :NATHALIE
 ECHO YOU HAVE PRESSED NATHALIE
 CHOICE /C YN /M "Is this ok? (Y or N)"%1
@@ -48,11 +50,11 @@ IF ERRORLEVEL ==1 GOTO UPDATES
 :UPDATES
 ECHO UPDATING Repository - SARAH
 ECHO ...to era2023
-::xcopy "C:\Users\perrymas\OneDrive - Rothamsted Research\@ e-RA Documents\Data-docs repository\metadata" "\\INTRANET-SERVER\era\era2023\metadata" /s /i /f /y /d
+xcopy "C:\Users\perrymas\OneDrive - Rothamsted Research\@ e-RA Documents\Data-docs repository\metadata" "\\INTRANET-SERVER\era\era2023\metadata" /s /i /f /y /d
 ECHO ...to Live
-::xcopy "C:\Users\perrymas\OneDrive - Rothamsted Research\@ e-RA Documents\Data-docs repository\metadata" "\\internet-serv2\newera\metadata" /s /i /f /y /d
+xcopy "C:\Users\perrymas\OneDrive - Rothamsted Research\@ e-RA Documents\Data-docs repository\metadata" "\\internet-serv2\newera\metadata" /s /i /f /y /d
 ECHO ...to Basset
-::xcopy "C:\Users\perrymas\OneDrive - Rothamsted Research\@ e-RA Documents\Data-docs repository\metadata" "\\basset\era\era2023\metadata" /s /i /f /y /d
+xcopy "C:\Users\perrymas\OneDrive - Rothamsted Research\@ e-RA Documents\Data-docs repository\metadata" "\\basset\era\era2023\metadata" /s /i /f /y /d
 ECHO .
 GOTO NEXT
 ::UPDATES

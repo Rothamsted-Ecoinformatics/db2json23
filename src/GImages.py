@@ -144,7 +144,8 @@ if __name__ == '__main__':
     print ("---- {} images in the database eraGilbert --------------".format(len(dbLoc)))
     print ("\n\n ")
     
-    # 2: Make a list of the file Locations of images stored on the BASSET drive (metadata) 
+    # 2: Make a list of the file Locations of images stored on the BASSET
+    # drive (metadata) 
     stLoc = getStored()
     for loc in stLoc: 
         print(loc)
