@@ -71,12 +71,12 @@ xcopy "d:\eRAWebStage\eraGilbert05\metadata" "\\INTRANET-SERVER\era\era2023\meta
 ECHO .
 ECHO UPDATING images
 ECHO UPDATING images to Basset first 
-xcopy "\\INTRANET-SERVER\era\era2023\images" "\\basset\era\era2023\images" /s /i /f /y /d
+::xcopy "\\INTRANET-SERVER\era\era2023\images" "\\basset\era\era2023\images" /s /i /f /y /d
 ECHO UPDATING images to internet from basset
 xcopy "\\basset\era\era2023\images" "\\internet-serv2\newera\images" /s /i /f /y /d
 ECHO .
 ECHO UPDATING infofiles - only if they are already in destination
-xcopy "\\INTRANET-SERVER\era\era2023\metadata\*.html" "\\basset\era\era2023\metadata" /s /i /f /y /u /d
+::xcopy "\\INTRANET-SERVER\era\era2023\metadata\*.html" "\\basset\era\era2023\metadata" /s /i /f /y /u /d
 xcopy "\\basset\era\era2023\metadata\*.html" "\\internet-serv2\newera\metadata" /s /i /f /y /u /d
 
 GOTO END
