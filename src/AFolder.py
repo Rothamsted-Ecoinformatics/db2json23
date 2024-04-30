@@ -139,15 +139,15 @@ def makedirectories(results):
     for item in experiments:
         exptDir = stage+'metadata/'+item
         testString += makeDir(exptDir) +'\n' 
-        exptRepoDir = repo+'metadata/'+item
-        testString += makeDir(exptRepoDir) +'\n' 
+        # exptRepoDir = repo+'metadata/'+item
+        # testString += makeDir(exptRepoDir) +'\n' 
     
     for row in results: 
         ex = Expt(row)  
         exptDir = stage+'metadata/'+ex.folder
         testString += makeDir(exptDir) +'\n' 
-        exptRepoDir = repo+'metadata/'+ex.folder
-        testString += makeDir(exptRepoDir) +'\n'      
+        # exptRepoDir = repo+'metadata/'+ex.folder
+        # testString += makeDir(exptRepoDir) +'\n'      
    
     return testString
 
@@ -186,7 +186,7 @@ if __name__ == '__main__':
     # stage = "d:/eRAWebStage/eraGilbert01/" 
     # repo = "d:/eRAWebRepo/repo08/"
     stage = settings.STAGE
-    repo = settings.REPO
+    #repo = settings.REPO
     #stage = config['STAGE']['STAGE']
     #repo = config['STAGE']['REPO']
     status = " created"
