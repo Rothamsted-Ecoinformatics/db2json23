@@ -16,7 +16,7 @@ print ("--- have your xls file ready in a D:\code\data\ folder ---- ")
 
 filename = input ("Filename including extension: ")
 mdq_id = input ("metadata document ID (find this in the eracuration): ")
-id = "https://doi.org/"+input ("DOI: ")
+#id = "https://doi.org/"+input ("DOI: ")
 
 
 #----------------------Code after this -------------------------------------
@@ -152,7 +152,7 @@ except exception.FrictionlessException as e:
 
 print('--- 4. Add additional metadata to the package from README page --- ')
 ## 4. Add additional metadata to the package
-pkg.id = id
+# pkg.id = id
 rm = xls.parse("README")
 rm.columns = ["a", "b", "c"]
 
@@ -330,7 +330,7 @@ with open(pkgpath + "README.txt", "w") as readme:
         readme.writelines("|Name|Title|Type|format|rdfType|Description|\n")
         readme.writelines("|----|-----|----|------|-------|-----------|\n")
         for fld in res.schema.fields:
-            # print(fld.name)
+            print(fld.name)
             readme.writelines("|"+fld.name+"|"+fld.title+"|"+fld.type+"|"+fld.format)
             if fld.rdf_type:
                 readme.writelines("|["+fld.rdf_type+"]("+fld.rdf_type+")")

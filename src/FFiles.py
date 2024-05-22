@@ -1,4 +1,3 @@
-
 """@package csv2json
 Created on 17/01/2021
 
