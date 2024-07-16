@@ -390,11 +390,17 @@ def prepareDistribution(mdId):
 	du.name ,
 	df.size_value,
 	df.file_name,
-	df.title 
+	df.title, 
+	md.short_name,
+	e.folder 
 FROM
 	document_files df 
 left join document_units du  on
 	df.document_unit_id  = du.id 
+join metadata_documents md on 
+	df.metadata_document_id = md.id 
+	join experiments e 
+	on md.experiment_id = e.id 
 where
 	df.is_illustration  = 0
 	and df.metadata_document_id  = ?""", mdId)
@@ -404,6 +410,9 @@ where
         for row in results:
             
             fileName = row.file_name
+            folder = row.folder
+            short_name = row.short_name.strip() if row.short_name else ''
+            contentURL = 'https://www.era.rothamsted.ac.uk/metadata/'+folder+'/'+short_name+'/'+fileName
             if fileName:
                 fileParts = fileName.split(".")
                 encodingFormat = fileParts[-1]
@@ -412,6 +421,7 @@ where
                     "type": "dataDownload",
                     "name": row.title,
                     "URL": fileName,
+                    "contentURL": contentURL,
                     "encodingFormat":  encodingFormat,
                     "fileSize": str(row.size_value) + ' ' + row.name
                 }

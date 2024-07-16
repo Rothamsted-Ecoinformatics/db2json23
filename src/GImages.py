@@ -149,6 +149,7 @@ if __name__ == '__main__':
     stLoc = getStored()
     for loc in stLoc: 
         print(loc)
+        
     
     play = input ("---- {} images in the BASSET drive --------------".format(len(stLoc)))
 
