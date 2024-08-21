@@ -8,6 +8,7 @@ import _metadata as mdq
 import re
 import json
 
+
 def camel_to_space(val):
     return re.sub(r'([a-z])([A-Z])', r'\1 \2',val)
 
@@ -68,7 +69,6 @@ print("-- 2. Generate template metadata inferring from the CSV --")
 
 ## 2. Generate template metadata inferring from the CSV
 pkg = describe_package(datapath, expand=True, stats=True) # works
-
 #pkg.to_json("datapackage-prev.json")   # added by Nath to check what pkg looks like 2021-12-10
 
 ##pkg = Package(datapath+"/*")
@@ -77,12 +77,12 @@ pkg = describe_package(datapath, expand=True, stats=True) # works
 pkg.profile = "tabular-data-package"
 print("-- 3. Update the metadata for each data resource - TABS --")
 ## 3. Update the metadata for each data resource
+
 for res in pkg.resources:
     rname = res["name"]
-    print("Resource - fname: "+ rname)
+    print("Resource - rname: "+ rname)
     keys = []
     for fld in res.schema.fields:
-        
         fname = fld['name'].strip()
         print("field - fname: " + fname)
         md = dfmd.loc[(rname,fname)]
@@ -210,7 +210,7 @@ for idx, row in rm.iterrows():
         resource_table = resource_table + "|" + a + ".csv|" + b + "|" + c + "|\n"
 
     elif part == 3 and str(a) != "nan":
-        if 'doi.org' in b: 
+        if 'http' in b: 
             sup_material = sup_material + "|" + a + "|[" + b + "](" + b + ")|" + c + "|\n"
         else: 
             sup_material = sup_material + "|" + a + "|[https://doi.org/" + b + "](https://doi.org/" + b + ")|" + c + "|\n"
