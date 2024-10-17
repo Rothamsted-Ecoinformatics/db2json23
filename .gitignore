@@ -3,3 +3,5 @@ src/config.ini
 src/dist/
 src/_connect.py
 src/freeze.py
+src/data_packager2024-10-14.py
+src/settings.py

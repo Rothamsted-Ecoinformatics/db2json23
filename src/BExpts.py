@@ -42,6 +42,7 @@ class Expt:
         self.exptID = row.code 
         self.folder =  ''.join(ch for ch in row.code if ch.isalnum()).lower()
         self.station = self.folder[0]
+        self.keywords = "TEST - get keywords from the metadata"
         
     def asExptJson(self):
         '''
@@ -49,6 +50,7 @@ class Expt:
         "Title": "Miscanthus sinensis giganteus study",
         "station": "r"
         '''
+        
         expt =  {
               "Experiment": self.experiment_name,
               "KeyRefCode": self.KeyRefCode,
@@ -57,7 +59,8 @@ class Expt:
               "expt_Code": self.exptID,
               "ExptFolder": self.folder,
               "Title": self.experiment_name,
-              "station": self.station
+              "station": self.station,
+              "keywords": self.keywords
             }        
         return expt
     

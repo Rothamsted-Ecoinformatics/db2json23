@@ -34,7 +34,7 @@ datapath = pkgpath
 
 
 dfmd = xls.parse("fields_metadata") ## sheet name
-dfmd.set_index(['resource','name'], inplace=True) 
+dfmd.set_index(["resource","name"], inplace=True) 
 ##pd.set_option('precision', 3) doesn't work
 print('-- 1. Create a CSV version of the Excel File --')
 
@@ -69,7 +69,7 @@ print("-- 2. Generate template metadata inferring from the CSV --")
 
 ## 2. Generate template metadata inferring from the CSV
 pkg = describe_package(datapath, expand=True, stats=True) # works
-#pkg.to_json("datapackage-prev.json")   # added by Nath to check what pkg looks like 2021-12-10
+## pkg.to_json("datapackage-prev.json")   # added by Nath to check what pkg looks like 2021-12-10
 
 ##pkg = Package(datapath+"/*")
 ##pkg.infer(stats=True)
@@ -83,7 +83,7 @@ for res in pkg.resources:
     print("Resource - rname: "+ rname)
     keys = []
     for fld in res.schema.fields:
-        fname = fld['name'].strip()
+        fname = fld["name"].strip()
         print("field - fname: " + fname)
         md = dfmd.loc[(rname,fname)]
         #if isinstance(md, pd.DataFrame):
@@ -125,7 +125,7 @@ for res in pkg.resources:
                 if len(fkparts) == 2: 
         #            print("vi-a")
                     keys.append({'fields':fname,'reference': {'resource':fkparts[0],'fields':fkparts[1]}})
-        #            print("vi-f")
+        #            print("vi-f')
                 else:
         #            print("vi-g")
                     mdarr = md.constraints.replace(", ",",").strip().split(",")
@@ -168,80 +168,135 @@ cite_as = ""
 sup_material = ""
 
 part = 1
+
+## This gets the DataCite Metadata record
+ds = mdq.get_document_json(mdq_id)
+
+doiURL = 'https://doi.org/'+ds["identifier"].lower()
+doi = ds["identifier"].lower()
+title = ds["name"].strip()
+
+def prepCitation (ds):
+    #YOU MUST CITE AS: Glendining, M.J., Gregory, A. S., Poulton, P.R. and Wilmer, W. 
+    # (2024). 
+    # Hoosfield Spring Barley Experiment organic manure chemical composition 1852-2019. 
+    # Electronic Rothamsted Archive, Rothamsted Research, Harpenden UK 
+    # https://doi.org/10.23637/rhf2-fym-01	   
+    data = ds
+    authorPerson = ''
+    authorOrg = '' 
+    citation = f''
+    for item in data["creator"]: 
+        if item["type"].lower() == 'person':
+            authorPerson += f'{item["givenName"]} {item["familyName"]}, '        
+        if item["type"].lower() == 'organization':
+            authorOrg += f'{item["name"]}, '      
+    if  authorPerson == '':
+        citation += authorOrg
+    else: 
+        citation += authorPerson 
+    citation.rstrip(',')
+    citation += f' ({data["publication_year"]}) '    
+    citation += f'Dataset: {data["name"]}   _electronic Rothamsted Archive, Rothamsted Research, Harpenden, UK,_ '
+    if '10.' in data["identifier"]:
+        realURL = f' https://doi.org/{data["identifier"]} '
+    else:  
+        realURL = f'{data["url"]} '
+    citation += f' {realURL}'
+    return citation
+
+for itemDesc in ds["description"]:
+    if itemDesc["descriptionType"] == "Abstract":
+        desc = itemDesc["description"]
+        desc = desc.replace('\r', '').replace('\n', '')
+        description = desc
+
 ## Loop through the Excel and extract content to local vars for later assembly
 for idx, row in rm.iterrows():
     a = str(row["a"])
     b = str(row["b"])
     c = str(row["c"])
-    if a.startswith("README"):
+    # if a.startswith("README"):
+    #     if b.startswith("http"): 
+    #         doiURL = b
+    #         doi = b.strip("https://doi.org/")
+    #     else: 
+    #         doiURL = "https://doi.org/"+b
+    #         doi = b
+            
+    # elif a == "Title:":
+    #     title = b.strip()
+     
+    # TODO   
 
-        doiURL = "https://doi.org/"+b
-        doi = b
-
-    elif a == "Title:":
-        title = b.strip()
+    cite_as = prepCitation (ds)
+    # elif a == "Description:":
+    #     description = b.strip()
         
-    elif a.startswith("Cite"):
-        cite_as = b
-
-    elif a == "Description:":
-        description = b.strip()
-
-    elif a == "Resource descriptions:":
-        resource_table = "\n### Contents\n\n|File|Dataset Name|Description|\n|----|------------|-----------|\n"
+    ## we keep resource description
+    if a == "Resource descriptions:":
+        resource_table = "\n### Resource Descriptions\n\n|resource_id|resource_title|resource_description|\n|----|------------|-----------|\n"
         part = 2
-    
-    elif a == "Conditions of Use:":
-        part = 0
-    
-    elif a == "Supplementary materials:":
-        sup_material = "\n### Supplementary materials\n\n|Resource|link|description|\n|-------------|------------|-----------|\n"
-        part = 3
-
     elif a == "resource_id" or a == "Resource_name" or a == "Resource name":
-        pass
-    
-    elif part == 1 and str(a) != "nan":
-        desc = desc + b    
-
+        pass    
+    ## This is the descriptions: still taken from the XL - 
+    ## TODO : Understand and action pkg stuff 
     elif part == 2 and str(a) != "nan":
         pkg.get_resource(a).title = b
         pkg.get_resource(a).description = c
         resource_table = resource_table + "|" + a + ".csv|" + b + "|" + c + "|\n"
+        
+    # elif a == "Conditions of Use:":
+    #     part = 0
+    
+    # elif a == "Supplementary materials:":
+    #     sup_material = "\n### Supplementary materials\n\n|Resource|link|description|\n|-------------|------------|-----------|\n"
+    #     part = 3
 
-    elif part == 3 and str(a) != "nan":
-        if 'http' in b: 
-            sup_material = sup_material + "|" + a + "|[" + b + "](" + b + ")|" + c + "|\n"
-        else: 
-            sup_material = sup_material + "|" + a + "|[https://doi.org/" + b + "](https://doi.org/" + b + ")|" + c + "|\n"
+    
+    
+    # elif part == 1 and str(a) != "nan":
+    #     desc = desc + b    
+
+    
+    ## Suplementary stuff taken from database
+    # elif part == 3 and str(a) != "nan":
+    #     if 'http' in b: 
+    #         sup_material = sup_material + "|" + a + "|[" + b + "](" + b + ")|" + c + "|\n"
+    #     else: 
+    #         sup_material = sup_material + "|" + a + "|[https://doi.org/" + b + "](https://doi.org/" + b + ")|" + c + "|\n"
             
 
-## This gets the DataCite Metadata record
-ds = mdq.get_document_json(mdq_id)
-# print (json.dumps(ds, indent=4))
+## test 2024-08-27 NC
+##print (json.dumps(ds, indent=4))
 with open(pkgpath + "README.txt", "w") as readme:
     pkg.id = doi
     pkg.name = title.strip().replace(" ","-").lower()
     pkg.title = title.strip()
     
-    readme.writelines("\n" + title + "\n" + ("=" * len(title)) + "\n")
-    readme.writelines("\n[" + doi + "](" + doiURL + ")\n")
-    readme.writelines("\n**Version**\n:    " + str(ds["version"]) + "\n")
+    readme.writelines("\n# README \n")
+    readme.writelines("\n## Summary \n")
+    readme.writelines("| <!-- -->    | <!-- -->    |\n")
+    readme.writelines("|-------------|-------------|\n")
+    readme.writelines("| **DOI**     |[" + doi + "](" + doiURL + ") |\n")
+    readme.writelines("| **Title**   |"+ title + "|\n")
+    readme.writelines("| **Version** |"+ str(ds["version"]) + "|\n")
     pkg.version = "1.0.0"
-    readme.writelines("\n**Published**\n:    " + str(ds["publication_year"]) + "\n")
-    readme.writelines("\n**Publisher**\n:    " + ds["publisher"]["name"] + "\n")
-    readme.writelines("\n**Keywords**\n:    " + ", ".join(ds["keywords"]) + "\n")
+    readme.writelines("| **Published** |"+ str(ds["publication_year"]) + "|\n")
+    readme.writelines("| **Publisher** |" + ds["publisher"]["name"] + "|\n")
+    readme.writelines("| **Keywords**  |" + ", ".join(ds["keywords"]) + "|\n")
     pkg.keywords = ds["keywords"]
-    readme.writelines("\n" + cite_as + "\n")
-    readme.writelines("\n## Description\n")
-    readme.writelines("*Note* the included Excel file: _*" + filename + "*_ contains the same data as the CSV files below. The Excel file contains each of the CSV files as an Excel worksheet and is provided for users who prefer Excel over CSV.")
+    readme.writelines("| **Cite as**   |" + cite_as + "|\n")
+    readme.writelines("| **Summary**   |" + desc + "|\n")
+    readme.writelines("| **Note**      |" + "The included Excel file: _*" + filename + "*_ contains the same data as the CSV files. The Excel worksheet fields_metadata contains column descriptions for all the resources. Each _data suffix worksheet is a data resource. The data resources for this dataset are described below. For all other information refer to the landing page or machine readable metadata.json")
+    readme.writelines("\n")
     readme.writelines(resource_table)
     readme.writelines("\n")
     description = ""
     for desc in ds["description"]:
         if desc["descriptionType"] != "TableOfContents":
             description = description + "### " + camel_to_space(desc["descriptionType"]) + "\n" 
-            description = description + desc["description"].strip() + "\n"
+            description = description + desc["description"].strip() + "\n\n"
     pkg.description = description
     readme.writelines(description)
 
@@ -257,14 +312,14 @@ with open(pkgpath + "README.txt", "w") as readme:
             tblAuthor = ""
 
     readme.writelines("\n### Contributor Roles\n")
-    readme.writelines("|Name|ORCID|Role|Affiliation|\n")
-    readme.writelines("|----|-----|----|-----------|\n")
+    readme.writelines("|Name|ORCID|Role (Affiliation)\n")
+    readme.writelines("|----|-----|------------------|\n")
     contributors = []
     for auth in ds["contributor"]:
         # print (auth)
         # print ('\n')
         if auth["type"] == "Person":
-            readme.writelines("|" + str(auth["name"]) + "|<" + str(auth["sameAs"]) + ">|" + camel_to_space(str(auth["jobTitle"])) + "|" + str(auth["affiliation"]["name"]) + "|\n")
+            readme.writelines("|" + str(auth["name"]) + "|<" + str(auth["sameAs"]) + ">|" + camel_to_space(str(auth["jobTitle"])) + " (" + str(auth["affiliation"]["name"]) + ")|\n")
             contrib = {}
             contrib["title"] =  auth["name"]
             if auth["sameAs"]:
@@ -272,18 +327,43 @@ with open(pkgpath + "README.txt", "w") as readme:
             contrib["organization"] = auth["affiliation"]["name"]
             contributors.append(contrib)
     pkg.contributors = contributors
+    
+    readme.writelines("\n### Supplementary Material\n")
+    readme.writelines("\n|Resource|link|description|")
+    readme.writelines("\n|-------------|------------|-----------|\n")
+    for ref in ds["relatedIdentifier"]:
+        # {
+        #     "relatedIdentifier": "10.23637/ERADOC-1-191",
+        #     "relatedIdentifierType": "DOI",
+        #     "name": "Rothamsted (1966) Details of the Classical Experiments",
+        #     "relatedIdentifierGeneralType": "Text",
+        #     "relationType": "IsDerivedFrom",
+        #     "rt_id": 28,
+        #     "relationTypeValue": "is derived from"
+        # },
+        # "|" + a + "|[https://doi.org/" + b + "](https://doi.org/" + b + ")|" + c + "|\n"
+        if 'http' in ref["relatedIdentifierType"]: 
+            readme.writelines("|"+ref["relatedIdentifierGeneralType"]+"| [" +  ref["relatedIdentifier"] + "](" + ref["relatedIdentifier"] + ")|" + ref["name"] + "|\n")
+        else : 
+            readme.writelines("|"+ ref["relationTypeValue"] + " " +ref["relatedIdentifierGeneralType"]+ "|[https://doi.org/" + ref["relatedIdentifier"] + "](https://doi.org/" + ref["relatedIdentifier"] + ")|" + ref["name"] + "|\n")
+    readme.writelines("\n")
+    readme.writelines("\n")      
+        
+    
     readme.writelines("\n### Conditions of Use\n")
-    readme.writelines("**Rights Holder**\n:    Rothamsted Research\n")
-    readme.writelines("\n**Licence**\n:    This dataset is available under a Creative Commons Attribution Licence (4.0). [https://creativecommons.org/licenses/by/4.0/](https://creativecommons.org/licenses/by/4.0/)\n")
+    readme.writelines("| <!-- -->    | <!-- -->    |\n")
+    readme.writelines("|-------------|-------------|\n")
+    readme.writelines("|**Rights Holder**|    Rothamsted Research |\n")
+    readme.writelines("|**Licence**|    This dataset is available under a Creative Commons Attribution Licence (4.0). [https://creativecommons.org/licenses/by/4.0/](https://creativecommons.org/licenses/by/4.0/)|\n")
     pkg.licenses = [{"name":"CC-BY-4.0","path":"https://creativecommons.org/licenses/by/4.0/","title":"Creative Commons Attribution 4.0 International"}]
-    readme.writelines("\n**Cite this Dataset**\n:    " + cite_as + "\n")
-    readme.writelines("\n**Conditions of Use**\n:    Rothamsted relies on the integrity of users to ensure that Rothamsted Research receives suitable acknowledgment as being the originators of these data. This enables us to monitor the use of each dataset and to demonstrate their value. Please send us a link to any publication that uses this Rothamsted data.\n")
+    readme.writelines("|**Cite this Dataset**|    " + cite_as + "|\n")
+    readme.writelines("|**Conditions of Use**|    Rothamsted relies on the integrity of users to ensure that Rothamsted Research receives suitable acknowledgment as being the originators of these data. This enables us to monitor the use of each dataset and to demonstrate their value. Please send us a link to any publication that uses this Rothamsted data.|\n")
 
     readme.writelines("\n### Funding\n")
     readme.writelines("\n")
     readme.writelines("\n")
-    readme.writelines("|Grant Name|Grant Number|Funder|Work Package|\n")
-    readme.writelines("|----|-----|----|-----------|\n")
+    readme.writelines("|Grant Name|Funder|Grant Number- Work Packages |\n")
+    readme.writelines("|----|-----|-----------------|\n")
     for fund in ds["funding"]:
         prefixes = ['https:','ror.org', 'doi.org']
         funder_id = ""
@@ -302,10 +382,10 @@ with open(pkgpath + "README.txt", "w") as readme:
         else:
             grantNumber = fund["alternateName"] 
         workPackages = "N/A"
-        if fund["disambiguatingDescription"]: 
-            workPackages = fund["disambiguatingDescription"]
+        if fund["disambiguatingDescription"] and "[" not in fund["disambiguatingDescription"]: 
+            workPackages = fund["disambiguatingDescription"].strip().replace("["," ").replace("\"","").replace("  "," ").replace("]"," ")
             
-        readme.writelines("|" + str(fund["name"]) + "|" + grantNumber + "|[" + fund["funder"]["name"] + "](" + fund["funder"]["url"] + ")"+ funder_id_type +funder_id + " | " + workPackages + "|\n")
+        readme.writelines("|" + str(fund["name"]) + "|[" + fund["funder"]["name"] + "](" + fund["funder"]["url"] + ")"+ funder_id_type +funder_id + "|" + grantNumber + " - " + workPackages + "|\n")
    
         # readme.writelines("\n**Funder name**\n:    [" + fund["funder"]["name"] + "](" + fund["funder"]["url"] + ")\n")
         # readme.writelines("\n**Award**\n:    " + fund["name"] + "\n")
@@ -314,11 +394,11 @@ with open(pkgpath + "README.txt", "w") as readme:
     #pkg.funding = funding
     readme.writelines("\n")
     # we add the LAT line for the internal datasets
-    if ds['isExternal'] == 0 : 
+    if ds["isExternal"] == 0 : 
         readme.writelines("\nThe RLTE-NBRI is also supported by the Lawes Agricultural Trust.")
         readme.writelines("\n")
 
-    readme.writelines(sup_material)
+    ## readme.writelines(sup_material)
 
     ## data dictionary
     readme.writelines("\n### Data Dictionary\n")
@@ -351,7 +431,7 @@ html = markdown.markdown(text, extensions=['tables','def_list'])
 
 with open(pkgpath + "README.html", "w", encoding="utf-8", errors="xmlcharrefreplace") as output_file:
     output_file.write("<html><head><style> " + 
-        "body {font-family:verdana;} " +
+        "body {font-family:calibri;} " +
         "table {border-collapse: collapse;} " +
         "table, th, td {border:1px solid darkgreen;}  " +
         "th, td {padding:8px;}  " +
@@ -375,5 +455,6 @@ except exception.FrictionlessException as e:
     print("================ INVALID JSON ==================")
     
 print("================ That's all ==================")
-print("Your Data package is in D:/code/data. ")
+print("Your Data package is in D:/code/data ")
 print("Remember to set XLS tab to be README before saving ")
+

@@ -746,7 +746,7 @@ def save(documentInfo):
     fxname = open(enwname,'w+')
     fxname.write(enwRef)
     fxname.close()
-    print("endnote file saved in  = " + enwname)
+    # print("endnote file saved in  = " + enwname)
 
     # Creates Reference software files
     risRef =prepRIS(documentInfo)
@@ -754,7 +754,7 @@ def save(documentInfo):
     fxname = open(risname,'w+')
     fxname.write(risRef)
     fxname.close()
-    print("ris file saved in  = " + risname)   
+    # print("ris file saved in  = " + risname)   
     
     
 def getDOCIDs():
