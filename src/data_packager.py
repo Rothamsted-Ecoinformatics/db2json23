@@ -34,6 +34,7 @@ datapath = pkgpath
 
 
 dfmd = xls.parse("fields_metadata") ## sheet name
+print(dfmd)
 dfmd.set_index(["resource","name"], inplace=True) 
 
 ##pd.set_option('precision', 3) doesn't work
@@ -88,9 +89,7 @@ for res in pkg.resources:
         print("field - fname: " + fname)
         md = dfmd.loc[(rname,fname)]
         #if isinstance(md, pd.DataFrame):
-        #   md = md.squeeze()
-        # print(type(md))
-        #print(md)
+        #   md = md.squeeze()   
         if rname == 'crop_data':
             print("md: " + md)
         ## may have to replace with if pd.Series.item(md.title):            
@@ -109,11 +108,15 @@ for res in pkg.resources:
         #print("iv")
         if not pd.isna(md.description):
             fld.description = md.description.strip()
+        else: 
+            fld.description = ""
         #print("v")
         if not pd.isna(md.missingValues):
-            fld.missing_values = [md.missingValues.strip()]
+            fld.missing_values = md.missingValues.strip()
+        #print("vii")
+           
         #print("vi")
-        # test for foriegn keys       
+        # test for foreign keys       
         if not pd.isna(md.constraints):
         #    print("vi-a")
             if md.constraints == 'primary key':
@@ -148,7 +151,7 @@ try:
    # print("VALID++++++++++++++++++++++++")
 except exception.FrictionlessException as e:
     print("+++++++++++ INVALID+++++++++++++")
-    print(json.dumps(e.error, indent=4))
+    # print(json.dumps(e.error, indent=4))
     print("+++++++++++ INVALID++++++++++++++")
 
 print('--- 4. Add additional metadata to the package from README page --- ')
@@ -410,19 +413,34 @@ with open(pkgpath + "README.txt", "w") as readme:
 
     ## data dictionary
     readme.writelines("\n### Data Dictionary\n")
-    
+
     for res in pkg.resources:
-        print(res) #Check res as there is an issue
+        # print(res) #Check res as there is an issue
         readme.writelines("\n### " + res.name + "\n ")
         readme.writelines("\n#### " + res.title + "\n ")
         readme.writelines("\n" + res.description + "\n\n")
-        readme.writelines("|Name|Title|Type|format|rdfType|Description|\n")
-        readme.writelines("|----|-----|----|------|-------|-----------|\n")
+        readme.writelines("|Name|Title|Type|format|rdfType|Missing Values|Measurement Units|Description|\n")
+        readme.writelines("|----|-----|----|------|-------|--------------|-----------------|------------|\n")
         for fld in res.schema.fields:
-            print(fld.name)
+            rname = res.name
+            fname = fld.name
+            md = dfmd.loc[(rname,fname)]
+            if not pd.isna(md.measurementUnit):
+                mesUnits = md.measurementUnit.strip().replace("1", "<sup>1</sup>").replace("2", "<sup>2</sup>").replace("-", "<sup>-</sup>").replace("3", "<sup>3</sup>")
+            else: 
+                mesUnits = ""
+         
             readme.writelines("|"+fld.name+"|"+fld.title+"|"+fld.type+"|"+fld.format)
             if fld.rdf_type:
                 readme.writelines("|["+fld.rdf_type+"]("+fld.rdf_type+")")
+            else:
+                readme.writelines("|")
+            if  fld.missing_values: 
+                readme.writelines("|"+" ".join(str(mv) for mv in fld.missing_values))
+            else:
+                readme.writelines("|")   
+            if  mesUnits: 
+                readme.writelines("|"+mesUnits)
             else:
                 readme.writelines("|")
             if fld.description:
