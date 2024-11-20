@@ -35,6 +35,7 @@ datapath = pkgpath
 
 dfmd = xls.parse("fields_metadata") ## sheet name
 dfmd.set_index(["resource","name"], inplace=True) 
+
 ##pd.set_option('precision', 3) doesn't work
 print('-- 1. Create a CSV version of the Excel File --')
 
@@ -234,10 +235,10 @@ for idx, row in rm.iterrows():
     #     description = b.strip()
         
     ## we keep resource description
-    if a == "Resource descriptions:":
+    if "resource descriptions" in a.lower():
         resource_table = "\n### Resource Descriptions\n\n|resource_id|resource_title|resource_description|\n|----|------------|-----------|\n"
         part = 2
-    elif a == "resource_id" or a == "Resource_name" or a == "Resource name":
+    elif a == "resource_id" or a == "resource_name" or a == "resource name":
         pass    
     ## This is the descriptions: still taken from the XL - 
     ## TODO : Understand and action pkg stuff 
@@ -278,7 +279,7 @@ with open(pkgpath + "README.txt", "w") as readme:
     readme.writelines("\n## Summary \n")
     readme.writelines("| <!-- -->    | <!-- -->    |\n")
     readme.writelines("|-------------|-------------|\n")
-    readme.writelines("| **DOI**     |[" + doi + "](" + doiURL + ") |\n")
+    readme.writelines("| **DOI**     |[" + doiURL + "](" + doiURL + ") |\n")
     readme.writelines("| **Title**   |"+ title + "|\n")
     readme.writelines("| **Version** |"+ str(ds["version"]) + "|\n")
     pkg.version = "1.0.0"
@@ -287,8 +288,10 @@ with open(pkgpath + "README.txt", "w") as readme:
     readme.writelines("| **Keywords**  |" + ", ".join(ds["keywords"]) + "|\n")
     pkg.keywords = ds["keywords"]
     readme.writelines("| **Cite as**   |" + cite_as + "|\n")
+    readme.writelines("| <!-- -->   |This dataset is provided by e-RA, the electronic Rothamsted Archive, and the Rothamsted Long Term Experiments |\n")
+    readme.writelines("| <!-- -->   |[https://www.era.rothamsted.ac.uk](https://www.era.rothamsted.ac.uk) |\n")
     readme.writelines("| **Summary**   |" + desc + "|\n")
-    readme.writelines("| **Note**      |" + "The included Excel file: _*" + filename + "*_ contains the same data as the CSV files. The Excel worksheet fields_metadata contains column descriptions for all the resources. Each _data suffix worksheet is a data resource. The data resources for this dataset are described below. For all other information refer to the landing page or machine readable metadata.json")
+    readme.writelines("| **Note**      |" + "The Excel file: _*" + filename + "*_ contains the same data as the CSV files. The Excel worksheet fields_metadata contains column descriptions for all the resources. Each _data suffix worksheet is a data resource. The data resources for this dataset are described below. For all other information refer to the landing page or machine readable metadata.json")
     readme.writelines("\n")
     readme.writelines(resource_table)
     readme.writelines("\n")
@@ -319,11 +322,16 @@ with open(pkgpath + "README.txt", "w") as readme:
         # print (auth)
         # print ('\n')
         if auth["type"] == "Person":
-            readme.writelines("|" + str(auth["name"]) + "|<" + str(auth["sameAs"]) + ">|" + camel_to_space(str(auth["jobTitle"])) + " (" + str(auth["affiliation"]["name"]) + ")|\n")
+            authURL = ""
+            if "http" in str(auth["sameAs"]): 
+                authURL = "<" + str(auth["sameAs"]) + ">"
+    
+            readme.writelines("|" + str(auth["name"]) + "|" + authURL+ "|" + camel_to_space(str(auth["jobTitle"])) + " (" + str(auth["affiliation"]["name"]) + ")|\n")
             contrib = {}
             contrib["title"] =  auth["name"]
+            contrib["path"] = ""
             if auth["sameAs"]:
-                contrib["path"] =  auth["sameAs"]
+                contrib["path"] =  auth["sameAs"].strip().replace("<","").replace(">","")
             contrib["organization"] = auth["affiliation"]["name"]
             contributors.append(contrib)
     pkg.contributors = contributors
@@ -360,8 +368,8 @@ with open(pkgpath + "README.txt", "w") as readme:
     readme.writelines("|**Conditions of Use**|    Rothamsted relies on the integrity of users to ensure that Rothamsted Research receives suitable acknowledgment as being the originators of these data. This enables us to monitor the use of each dataset and to demonstrate their value. Please send us a link to any publication that uses this Rothamsted data.|\n")
 
     readme.writelines("\n### Funding\n")
-    readme.writelines("\n")
-    readme.writelines("\n")
+    readme.writelines("\nRothamsted Research receives strategic funding from the Biotechnology and Biological Sciences Research Council of the United Kingdom (BBSRC) and is also supported by the Lawes Agricultural Trust. We acknowledge support from the following:		")
+    readme.writelines("\n\n")
     readme.writelines("|Grant Name|Funder|Grant Number- Work Packages |\n")
     readme.writelines("|----|-----|-----------------|\n")
     for fund in ds["funding"]:
@@ -395,7 +403,7 @@ with open(pkgpath + "README.txt", "w") as readme:
     readme.writelines("\n")
     # we add the LAT line for the internal datasets
     if ds["isExternal"] == 0 : 
-        readme.writelines("\nThe RLTE-NBRI is also supported by the Lawes Agricultural Trust.")
+        #readme.writelines("\nThe RLTE-NBRI is also supported by the Lawes Agricultural Trust.")
         readme.writelines("\n")
 
     ## readme.writelines(sup_material)
@@ -404,8 +412,9 @@ with open(pkgpath + "README.txt", "w") as readme:
     readme.writelines("\n### Data Dictionary\n")
     
     for res in pkg.resources:
-        readme.writelines("\n###" + res.name + "\n")
-        readme.writelines("\n####" + res.title + "\n")
+        print(res) #Check res as there is an issue
+        readme.writelines("\n### " + res.name + "\n ")
+        readme.writelines("\n#### " + res.title + "\n ")
         readme.writelines("\n" + res.description + "\n\n")
         readme.writelines("|Name|Title|Type|format|rdfType|Description|\n")
         readme.writelines("|----|-----|----|------|-------|-----------|\n")
@@ -454,6 +463,8 @@ except exception.FrictionlessException as e:
     print(json.dumps(e.error, indent=4))
     print("================ INVALID JSON ==================")
     
+print("++++++++++  create Field Metadata .csv ++++++++++++++++++++")
+dfmd.to_csv(datapath + "fields_metadata" + ".csv",index=False)
 print("================ That's all ==================")
 print("Your Data package is in D:/code/data ")
 print("Remember to set XLS tab to be README before saving ")

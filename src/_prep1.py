@@ -44,6 +44,19 @@ def getGLTENIDs():
            
     return GLTENIDs
 
+def getKeywords(folder): 
+    expKW = ""
+    sql = f"select DISTINCT  subject from subjects join document_subjects ds on ds.subject_id = subjects.id where ds.metadata_document_id in (select md2.id from metadata_documents md2 join experiments e on md2.experiment_id = e.id where e.folder = '{folder}')"
+    cnx = _connect.connect()
+    cur = cnx.cursor()
+    cur.execute(sql)
+    results = cur.fetchall()
+    for row in results: 
+        expKW += row.subject.lower()
+        expKW += ", "
+    return expKW.rstrip(', ')
+
+
 def getData(exptID):
     base = "https://glten.org/api/v0/public/experiment/"
     exptID = str(exptID)
@@ -126,6 +139,7 @@ def prepareExperiment(data):
         url=  data['url'],
         description= data['description'],
         disambiguatingDescription= data['objective'],
+        subjects = getKeywords(data['local_identifier'].replace('/','').lower()),
         #relatedExperiment= prepareRelatedExperiments(data['related_experiments'])
     ),
     dataAccess= dict(

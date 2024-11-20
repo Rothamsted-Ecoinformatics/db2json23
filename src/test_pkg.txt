@@ -1,0 +1,41 @@
+{
+    'path': 'p_factor_data.csv', 
+    'name': 'p_factor_data', 
+    'profile': 'tabular-data-resource', 
+    'scheme': 'file', 
+    'format': 'csv', 
+    'hashing': 'md5', 
+    'stats': {'hash': 'c689e8413863feb356262ceb1e93e9a9', 'bytes': 658, 'fields': 10, 'rows': 2}, 
+    'encoding': 'iso8859-1', 
+    'schema': {
+        'fields': [
+            {'name': 'description', 'type': 'string', 'format': 'default', 
+            'title': 'Description', 
+            'rdfType': 'https://schema.org/description', 
+            'description': 'A description of the factor level'}, 
+            {'name': 'factor_level_name', 'type': 'string', 'format': 'default', 
+            'title': 'Factor level name', 'rdfType': 'http://purl.obolibrary.org/obo/STATO_0000265', 
+            'description': 'The name for a factor level'},
+            {'name': 'years', 'type': 'string', 'format': 'default', 
+            'title': 'Years', 'description': 'The year range for when the factor level was used'}, 
+            {'name': 'treatment_factor', 'type': 'string', 'format': 'default', 'title': 'Treatment factor', 'rdfType': 'http://purl.obolibrary.org/obo/NCIT_C164385', 'description': 'The label for the treatment factor'}, 
+            {'name': 'treatment_factor_rdfType', 'type': 'string', 'format': 'uri', 'title': 'Treatment factor rdfType', 'rdfType': 'https://schema.org/identifier', 'description': 'A controlled vocabulary URI for the treatment factor'}, 
+            {'name': 'amount', 'type': 'number', 'format': 'default', 'bareNumber': True, 'title': 'Amount', 'rdfType': 'https://schema.org/QuantitativeValue', 'description': 'Total inorganic phosphorus (P) fertiliser which was applied to this crop as a treatment factor.'}, 
+            {'name': 'amount_unit', 'type': 'string', 'format': 'default', 'title': 'Amount unit', 'rdfType': 'https://schema.org/unitText', 'description': 'Units in which the P fertiliser was applied each year'}, 
+            {'name': 'frequency', 'type': 'string', 'format': 'default', 'title': 'Frequency', 'rdfType': 'https://schema.org/repeatFrequency', 'description': 'The frequency at which the factor level treatment was applied'}, 
+            {'name': 'treatment_form', 'type': 'string', 'format': 'default', 'title': 'Treatment form', 'rdfType': 'http://purl.obolibrary.org/obo/CHEBI_33287', 'description': 'The form of inorganic P fertiliser applied'}, 
+            {'name': 'treatment_form_rdfType', 'type': 'string', 'format': 'uri', 'title': 'Treatment form rdfType', 'rdfType': 'https://schema.org/identifier', 'description': 'A controlled vocabulary URI for the treatment factor level form'}
+            ], 
+        'missingValues': [''], 
+        'primaryKey': 'factor_level_name'
+    }, 
+    'innerpath': '', 
+    'compression': '', 
+    'control': {}, 
+    'dialect': {'delimiter': ',', 
+    'lineTerminator': '\r\n', 
+    'quoteChar': '"', 
+    'doubleQuote': True, 
+    'skipInitialSpace': False}, 
+    'layout': {'header': True, 'headerRows': [1], 'headerJoin': ' ', 'headerCase': True}
+    }

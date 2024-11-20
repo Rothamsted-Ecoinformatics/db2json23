@@ -42,7 +42,7 @@ class Expt:
         self.exptID = row.code 
         self.folder =  ''.join(ch for ch in row.code if ch.isalnum()).lower()
         self.station = self.folder[0]
-        self.keywords = "TEST - get keywords from the metadata"
+        self.keywords = _prep1.getKeywords(self.folder)
         
     def asExptJson(self):
         '''
@@ -194,6 +194,8 @@ def process(exptID):
         fxname.write(strJsimages)
         fxname.close()
         print('images.json saved in '+xname)
+        
+        print(_prep1.getKeywords(folder))
     else: 
         print('DATA NOT READY') 
  
