@@ -180,6 +180,7 @@ doiURL = 'https://doi.org/'+ds["identifier"].lower()
 doi = ds["identifier"].lower()
 title = ds["name"].strip()
 
+
 def prepCitation (ds):
     #YOU MUST CITE AS: Glendining, M.J., Gregory, A. S., Poulton, P.R. and Wilmer, W. 
     # (2024). 
@@ -415,7 +416,8 @@ with open(pkgpath + "README.txt", "w") as readme:
     readme.writelines("\n### Data Dictionary\n")
 
     for res in pkg.resources:
-        # print(res) #Check res as there is an issue
+        
+        print(res) #Check res as there is an issue
         readme.writelines("\n### " + res.name + "\n ")
         readme.writelines("\n#### " + res.title + "\n ")
         readme.writelines("\n" + res.description + "\n\n")

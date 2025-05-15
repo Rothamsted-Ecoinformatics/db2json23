@@ -230,12 +230,29 @@ def prepareSite(data):
             )
         )
         )
+def getOrganizationAddress(org):
+    
+    cnx = _connect.connect()
+    cur = cnx.cursor()
+    orgAddress = ''
+    sql = f"select * from organisations o  where o.abbreviation  like '%{org}%' or  name like '%{org}%';"
+    # print(sql)
+    
+    cur.execute(sql)
+    results = cur.fetchall()  
+
+    for row in results: 
+        orgAddress = f'{row.street_address},  {row.postal_code}, {row.address_locality}, {row.address_country}'            
+    return orgAddress
 
 def preparePersons(data):
     contributors = []
     for details in data['people']:
         sname = details['name'].split() 
         #assuming name = givenName familyName
+        org = details['affiliation'] if details['affiliation'] else ''
+        orgAddress = getOrganizationAddress(org) if org != '' else '' 
+    
         contributors.append(dict
                             (  
                                 type= "Person",
@@ -243,7 +260,8 @@ def preparePersons(data):
             name= details['name'],
             givenName= sname[0],
             familyName= sname[1],
-            sameAs= details['orcid'],
+            sameAs= details['orcid'].replace('https://orcid.org/','') if details['orcid'] else '',
+            
 #             address= dict(
 #                 type= "PostalAddress",
 #                 streetAddress= "not in GLTEN",
@@ -252,10 +270,11 @@ def preparePersons(data):
 #                 postalCode= "not in GLTEN",
 #                 addressCountry= "not in GLTEN"
 #             ),
-            affiliation= dict (
+            affiliation= dict(
                 type= "Organization",
-                name= "Rothamsted Research",
-                address= "West Common, Harpenden, Hertfordshire, AL5 2JQ, United Kingdom"
+                name= details['affiliation'],
+                department = details['department'],
+                address= "West Common, Harpenden, Hertfordshire, AL5 2JQ, United Kingdom" if  "Rothamsted" in details['affiliation'] else orgAddress,
             )
             )
                             )

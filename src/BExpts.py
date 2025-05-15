@@ -125,7 +125,7 @@ def process(exptID):
         fxname = open(xname,'w+')
         fxname.write(metadataJson)
         fxname.close()
-        print("gltenmetadata.json saved in  = " + xname)
+        print("GLTENmetadata.json saved in  = " + xname)
         
         
         
