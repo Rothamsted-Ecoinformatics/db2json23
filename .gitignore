@@ -1,2 +1,9 @@
-# Created by venv; see https://docs.python.org/3/library/venv.html
-*
+# Created by venv; see https://docs.python.org/3/library/venv.html        ../Lib/
+Include
+Lib
+Scripts
+src/dist
+src/__pycache__
+pyvenv.cfg
+src/_connect.py
+src/data_packager2024-10-14.py
