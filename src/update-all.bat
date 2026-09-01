@@ -40,6 +40,8 @@ IF ERRORLEVEL ==1 GOTO UPDATEN
 ECHO.
 ECHO.
 ECHO UPDATING Repository - NATHALIE
+
+
 ECHO ...to internet-serv2\Live
 xcopy "D:\OneDrive - Rothamsted Research\Documents - e-RA\Data-docs repository\metadata" "\\internet-serv2\newera\metadata" /s /i /f /y /d
 ECHO ...to basset\Basset
@@ -90,11 +92,11 @@ ECHO UPDATING html files - only if they are already in destination
 xcopy "\\basset\era\era2023\metadata\*.html" "\\internet-serv2\newera\metadata" /s /i /f /y /u /d
 ECHO.
 ECHO.
-ECHO PLEASE do that ONCE more to check everything has gone through
-CHOICE /C YN /M "Shall we run this again ? (Y or N)"%1
+::ECHO PLEASE do that ONCE more to check everything has gone through
+::CHOICE /C YN /M "Shall we run this again ? (Y or N)"%1
 
-IF ERRORLEVEL ==2 GOTO END
-IF ERRORLEVEL ==1 GOTO BEGIN
+::IF ERRORLEVEL ==2 GOTO END
+::IF ERRORLEVEL ==1 GOTO BEGIN
 ECHO.
 ECHO.
 GOTO END

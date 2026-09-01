@@ -206,15 +206,5 @@ if __name__ == '__main__':
         
         finish = input("Thanks for your work:) ")
         pass
-    print (" ")
-    print (" ")
-    print ("     .-******-. ")
-    print ("   .'          '. ")
-    print ("  /   O      O   \ ")
-    print (" :                : ")
-    print (" |                | ")
-    print (" : ',          ,' : ")
-    print ("  \  '-......-'  / ")
-    print ("   '.          .' ")
-    print ("     '-......-' ")
-    
+   
+   

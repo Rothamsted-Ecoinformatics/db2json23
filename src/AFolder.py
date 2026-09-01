@@ -105,7 +105,7 @@ def makeJSON(results):
 
 def makeIndexHtmlstr(newDir):
     '''idea to buid a specific html page to redirect people who are at the root of our directories to the actual experiment '''
-    strIndex = 'copy index.html '+newDir+'\index.html'
+    strIndex = r'copy index.html '+newDir+r'\index.html'
     
     return strIndex 
 

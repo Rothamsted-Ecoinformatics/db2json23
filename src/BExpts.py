@@ -126,10 +126,7 @@ def process(exptID):
         fxname.write(metadataJson)
         fxname.close()
         print("GLTENmetadata.json saved in  = " + xname)
-        
-        
-        
-        
+           
         experiment = _prep1.prepareExperiment(data) 
         experimentJson =  json.dumps(experiment, indent=4)
         xname = settings.STAGE+ "metadata/"+str(folder)+"/experiment.json"
@@ -137,9 +134,7 @@ def process(exptID):
         fxname.write(experimentJson)
         fxname.close()
         print("experiment.json saved in  = " + xname)
-        
-
-          
+           
         site = _prep1.prepareSite(data)
         siteJson =  json.dumps(site, indent=4)
         xname = settings.STAGE+ "metadata/"+str(folder)+"/site.json"
@@ -148,7 +143,6 @@ def process(exptID):
         fxname.close()
         print("site.json saved in  = " + xname)
         
-           
         persons = dict (contributors = _prep1.preparePersons(data))
         personJson =  json.dumps(persons, indent=4)
         xname = settings.STAGE+ "metadata/"+str(folder)+"/person.json"

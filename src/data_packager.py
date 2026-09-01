@@ -1,4 +1,4 @@
-from frictionless import describe_package, describe_schema, describe_resource, Schema, Package, validate, exception
+from frictionless import  Schema, Package, Resource, validate, exception
 import os
 import glob
 import pandas as pd
@@ -7,7 +7,7 @@ from shutil import rmtree
 import _metadata as mdq
 import re
 import json
-
+## remove describe_package, describe_schema, describe_resource, from import as these are not working with the latest frictionless version, but we need to check if this is because of the way we are using them or if they have been removed.
 
 def camel_to_space(val):
     return re.sub(r'([a-z])([A-Z])', r'\1 \2',val)
@@ -193,7 +193,7 @@ def prepCitation (ds):
     citation = f''
     for item in data["creator"]: 
         if item["type"].lower() == 'person':
-            authorPerson += f'{item["givenName"]} {item["familyName"]}, '        
+            authorPerson += f' {item["familyName"]} {item["givenName"][0]}., '        
         if item["type"].lower() == 'organization':
             authorOrg += f'{item["name"]}, '      
     if  authorPerson == '':
@@ -366,11 +366,16 @@ with open(pkgpath + "README.txt", "w") as readme:
     readme.writelines("| <!-- -->    | <!-- -->    |\n")
     readme.writelines("|-------------|-------------|\n")
     readme.writelines("|**Rights Holder**|    Rothamsted Research |\n")
-    readme.writelines("|**Licence**|    This dataset is available under a Creative Commons Attribution Licence (4.0). [https://creativecommons.org/licenses/by/4.0/](https://creativecommons.org/licenses/by/4.0/)|\n")
+    readme.writelines("|**Licence**|    This dataset is available under a Creative Commons Attribution Licence (4.0). [https://creativecommons.org/licenses/by/4.0/](https://creativecommons.org/licenses/by/4.0/)|\n")
     pkg.licenses = [{"name":"CC-BY-4.0","path":"https://creativecommons.org/licenses/by/4.0/","title":"Creative Commons Attribution 4.0 International"}]
-    readme.writelines("|**Cite this Dataset**|    " + cite_as + "|\n")
-    readme.writelines("|**Conditions of Use**|    Rothamsted relies on the integrity of users to ensure that Rothamsted Research receives suitable acknowledgment as being the originators of these data. This enables us to monitor the use of each dataset and to demonstrate their value. Please send us a link to any publication that uses this Rothamsted data.|\n")
+    readme.writelines("|**You must cite this dataset as**|    " + cite_as + "|\n")
+    readme.writelines("|**Conditions of Use**|    Rothamsted  relies on the integrity of users to ensure that Rothamsted Research receives  suitable acknowledgment as being the originators of these data. This enables  us to monitor the use of each dataset and to demonstrate their value. Please  send us a link to any publication that uses this Rothamsted data.|\n")
+    readme.writelines("|**For your  Acknowledgements section**|The Electronic Rothamsted Archive (e-RA), its datasets, information and other resources, are part of the Rothamsted Long-Term Experiments - National Bioscience Research Infrastructure (RLTE-NBRI), funded by the UK Research and Innovation – Biotechnology and Biological Sciences Research Council (UKRI-BBSRC) under award BBS/E/RH/23NB0007 (2023-2028). The RLTE-NBRI is also supported by the Lawes Agricultural Trust. |\n")
+    readme.writelines("|**Attribution statement**|Where the data is presented as a graphic or summary statistics, either in original or derived form,  you must always use the following attribution statements to acknowledge the source of the information: Contains data supplied by Rothamsted Research. Also use the citation for the specific Open Access dataset |\n")
+    readme.writelines("|**Co-authorship**|	If  you require significant support from Rothamsted Scientists to compile, understand or analyse a dataset we request co-authorship on publications using the data. |\n")
+    readme.writelines("|**Changes and  misrepresentation**|Any reasonable  changes made to the dataset must be indicated but not in a way that suggests  Rothamsted Research endorses the change or use. You must not intentionally  misrepresent the dataset. If you have any doubts about interpretation of the  data please contact the e-RA curators and they will be happy to support you. |\n")
 
+    
     readme.writelines("\n### Funding\n")
     readme.writelines("\nRothamsted Research receives strategic funding from the Biotechnology and Biological Sciences Research Council of the United Kingdom (BBSRC) and is also supported by the Lawes Agricultural Trust. We acknowledge support from the following:		")
     readme.writelines("\n\n")
@@ -417,7 +422,7 @@ with open(pkgpath + "README.txt", "w") as readme:
 
     for res in pkg.resources:
         
-        print(res) #Check res as there is an issue
+        # print(res) #Check res as there is an issue
         readme.writelines("\n### " + res.name + "\n ")
         readme.writelines("\n#### " + res.title + "\n ")
         readme.writelines("\n" + res.description + "\n\n")
@@ -446,7 +451,7 @@ with open(pkgpath + "README.txt", "w") as readme:
             else:
                 readme.writelines("|")
             if fld.description:
-                # print(fld.description)
+                #print(fld.description)
                 readme.writelines("|"+fld.description)
             else:
                 readme.writelines("|")
@@ -462,9 +467,9 @@ with open(pkgpath + "README.html", "w", encoding="utf-8", errors="xmlcharrefrepl
     output_file.write("<html><head><style> " + 
         "body {font-family:calibri;} " +
         "table {border-collapse: collapse;} " +
-        "table, th, td {border:1px solid darkgreen;}  " +
+        "table, th, td {border:1px solid #3C7D22;}  " +
         "th, td {padding:8px;}  " +
-        "th {background-color:#4CAF50;}  " +
+        "th {background-color:#3C7D22; color: GhostWhite; font-size:large; }  " +
         "tr:nth-child(even){background-color: #f2f2f2;}</style></head><body>")
     output_file.write(html)
     output_file.write('</body></html>')
