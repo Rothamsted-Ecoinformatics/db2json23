@@ -3,7 +3,7 @@ Include
 Lib
 Scripts
 src/dist
-src/__pycache__
 pyvenv.cfg
 src/_connect.py
 src/data_packager2024-10-14.py
+src/__pycache__/

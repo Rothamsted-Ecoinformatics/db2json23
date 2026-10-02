@@ -1,4 +1,4 @@
-from frictionless import  Schema, Package, Resource, validate, exception
+from frictionless import  Schema, Package, Resource, describe, validate, exception
 import os
 import glob
 import pandas as pd
@@ -70,18 +70,19 @@ for sheet_name in xls.sheet_names:
 print("-- 2. Generate template metadata inferring from the CSV --")
 
 ## 2. Generate template metadata inferring from the CSV
-pkg = describe_package(datapath, expand=True, stats=True) # works
+pkg = Package(datapath)
+## pkg = describe(datapath, type="package", stats=True) # works
 ## pkg.to_json("datapackage-prev.json")   # added by Nath to check what pkg looks like 2021-12-10
 
 ##pkg = Package(datapath+"/*")
 ##pkg.infer(stats=True)
 
-pkg.profile = "tabular-data-package"
+## pkg.profile = "tabular-data-package"
 print("-- 3. Update the metadata for each data resource - TABS --")
 ## 3. Update the metadata for each data resource
 
 for res in pkg.resources:
-    rname = res["name"]
+    rname = res.name
     print("Resource - rname: "+ rname)
     keys = []
     for fld in res.schema.fields:
@@ -158,6 +159,8 @@ print('--- 4. Add additional metadata to the package from README page --- ')
 ## 4. Add additional metadata to the package
 # pkg.id = id
 rm = xls.parse("README")
+print(rm.shape)
+print(rm.columns.tolist())
 rm.columns = ["a", "b", "c"]
 
 # simplest way to generate the README is to extract text from Excel into strings then process the JSON metadata and assemble blocks.
@@ -385,14 +388,15 @@ with open(pkgpath + "README.txt", "w") as readme:
         prefixes = ['https:','ror.org', 'doi.org']
         funder_id = ""
         funder_id_type = ""
-        strList = fund["funder"]["identifier"].split('/')
-        for item in strList:
-            if item == 'ror.org': 
-                funder_id_type = ' -  ROR_ID = '
-            if item == 'doi.org': 
-                funder_id_type = ' -  DOI = '    
-            if item not in prefixes: 
-                funder_id += item
+        if fund["funder"]["identifier"]:  
+            strList = fund["funder"]["identifier"].split('/')
+            for item in strList:
+                if item == 'ror.org': 
+                    funder_id_type = ' -  ROR_ID = '
+                if item == 'doi.org': 
+                    funder_id_type = ' -  DOI = '    
+                if item not in prefixes: 
+                    funder_id += item
         grantNumber = "" 
         if fund["url"]:
             grantNumber = "[" + fund["alternateName"] + "](" + fund["url"] + ")"
@@ -421,6 +425,7 @@ with open(pkgpath + "README.txt", "w") as readme:
     readme.writelines("\n### Data Dictionary\n")
 
     for res in pkg.resources:
+        res.infer()
         
         # print(res) #Check res as there is an issue
         readme.writelines("\n### " + res.name + "\n ")
@@ -431,13 +436,40 @@ with open(pkgpath + "README.txt", "w") as readme:
         for fld in res.schema.fields:
             rname = res.name
             fname = fld.name
+
+            print("resource =", rname)
+            print("field =", fname)
+            print(dfmd.index)
+            print(dfmd.index.names)
+            print(dfmd.index[:20])
+            
+            try:
+                md = dfmd.loc[(rname, fname)]
+            except KeyError:
+                print(f"Missing metadata for resource='{rname}', field='{fname}'")
+            
             md = dfmd.loc[(rname,fname)]
             if not pd.isna(md.measurementUnit):
                 mesUnits = md.measurementUnit.strip().replace("1", "<sup>1</sup>").replace("2", "<sup>2</sup>").replace("-", "<sup>-</sup>").replace("3", "<sup>3</sup>")
             else: 
                 mesUnits = ""
-         
-            readme.writelines("|"+fld.name+"|"+fld.title+"|"+fld.type+"|"+fld.format)
+            if fld.name: 
+                readme.writelines("|"+fld.name)
+            else :
+                readme.writelines("|")
+            ## +"|"+fld.title+"|"+fld.type+"|"+fld.format) 
+            if fld.title: 
+                readme.writelines("|"+fld.title)
+            else :
+                readme.writelines("|")
+            if fld.type:
+                readme.writelines("|"+fld.type) 
+            else:
+                readme.writelines("|")
+            if fld.format:
+                readme.writelines("|"+fld.format)
+            else:
+                readme.writelines("|")
             if fld.rdf_type:
                 readme.writelines("|["+fld.rdf_type+"]("+fld.rdf_type+")")
             else:
@@ -476,17 +508,31 @@ with open(pkgpath + "README.html", "w", encoding="utf-8", errors="xmlcharrefrepl
 
 #pkg.to_yaml(pname + ".yaml")
 pkg.to_json("datapackage.json")
-try:
-    valid = validate(pkg)
+
+
+report = validate(pkg)
+
+if report.valid:
     print("================ VALID datapackage PACKAGE ==================")
-    with open(path + "err.json", "w") as err_file:
-        err_file.write(json.dumps(valid, indent=4))
-    #print(json.dumps(e.error, indent=4))
-    print("================ VALID datapackage JSON ==================")
-except exception.FrictionlessException as e:
-    print("================ INVALID PACKAGE ==================")
-    print(json.dumps(e.error, indent=4))
-    print("================ INVALID JSON ==================")
+else:
+    print("================ INVALID datapackage PACKAGE ==================")
+
+with open(path + "err.json", "w") as err_file:
+    err_file.write(report.to_json())
+
+print("================ VALIDATION COMPLETE ==================")
+
+# try:
+#     valid = validate(pkg)
+#     print("================ VALID datapackage PACKAGE ==================")
+#     with open(path + "err.json", "w") as err_file:
+#         err_file.write(json.dumps(valid, indent=4))
+#     #print(json.dumps(e.error, indent=4))
+#     print("================ VALID datapackage JSON ==================")
+# except exception.FrictionlessException as e:
+#     print("================ INVALID PACKAGE ==================")
+#     print(json.dumps(e.error, indent=4))
+#     print("================ INVALID JSON ==================")
     
 print("++++++++++  create Field Metadata .csv ++++++++++++++++++++")
 dfmd.to_csv(datapath + "fields_metadata" + ".csv",index=False)
