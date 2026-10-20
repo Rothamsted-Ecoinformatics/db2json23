@@ -13,7 +13,7 @@ def camel_to_space(val):
     return re.sub(r'([a-z])([A-Z])', r'\1 \2',val)
 
 
-print ("--- have your xls file ready in a D:\code\data\ folder ---- ")
+print ("--- have your xls file ready in a D:\\code\\data\\ folder ---- ")
 
 filename = input ("Filename including extension: ")
 mdq_id = input ("metadata document ID (find this in the eracuration): ")
@@ -423,9 +423,13 @@ with open(pkgpath + "README.txt", "w") as readme:
 
     ## data dictionary
     readme.writelines("\n### Data Dictionary\n")
-
+    print(pkg.to_descriptor()) # describe package to find
     for res in pkg.resources:
         res.infer()
+        
+        print("name =", res.name)
+        print("path =", res.path)
+        
         
         # print(res) #Check res as there is an issue
         readme.writelines("\n### " + res.name + "\n ")
@@ -437,11 +441,11 @@ with open(pkgpath + "README.txt", "w") as readme:
             rname = res.name
             fname = fld.name
 
-            print("resource =", rname)
-            print("field =", fname)
-            print(dfmd.index)
-            print(dfmd.index.names)
-            print(dfmd.index[:20])
+            # print("resource =", rname)
+            # print("field =", fname)
+            # print(dfmd.index)
+            # print(dfmd.index.names)
+            # print(dfmd.index[:20])
             
             try:
                 md = dfmd.loc[(rname, fname)]
@@ -509,13 +513,16 @@ with open(pkgpath + "README.html", "w", encoding="utf-8", errors="xmlcharrefrepl
 #pkg.to_yaml(pname + ".yaml")
 pkg.to_json("datapackage.json")
 
+report = validate("datapackage.json")
 
-report = validate(pkg)
+print(report.valid)
+
 
 if report.valid:
     print("================ VALID datapackage PACKAGE ==================")
 else:
     print("================ INVALID datapackage PACKAGE ==================")
+    print(report.to_summary())
 
 with open(path + "err.json", "w") as err_file:
     err_file.write(report.to_json())
