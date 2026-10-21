@@ -159,8 +159,8 @@ print('--- 4. Add additional metadata to the package from README page --- ')
 ## 4. Add additional metadata to the package
 # pkg.id = id
 rm = xls.parse("README")
-print(rm.shape)
-print(rm.columns.tolist())
+print("shape of rm:", rm.shape)
+print("columns of rm:", rm.columns.tolist())
 rm.columns = ["a", "b", "c"]
 
 # simplest way to generate the README is to extract text from Excel into strings then process the JSON metadata and assemble blocks.
@@ -423,7 +423,7 @@ with open(pkgpath + "README.txt", "w") as readme:
 
     ## data dictionary
     readme.writelines("\n### Data Dictionary\n")
-    print(pkg.to_descriptor()) # describe package to find
+    ## print(pkg.to_descriptor()) # describe package to find
     for res in pkg.resources:
         res.infer()
         
@@ -435,11 +435,12 @@ with open(pkgpath + "README.txt", "w") as readme:
         readme.writelines("\n### " + res.name + "\n ")
         readme.writelines("\n#### " + res.title + "\n ")
         readme.writelines("\n" + res.description + "\n\n")
-        readme.writelines("|Name|Title|Type|format|rdfType|Missing Values|Measurement Units|Description|\n")
-        readme.writelines("|----|-----|----|------|-------|--------------|-----------------|------------|\n")
+        readme.writelines("|Name|Title|Type|format|rdfType|Missing Values|Measurement Units|Description|Reference|\n")
+        readme.writelines("|----|-----|----|------|-------|--------------|-----------------|-----------|-----------|\n")
         for fld in res.schema.fields:
             rname = res.name
             fname = fld.name
+            
 
             # print("resource =", rname)
             # print("field =", fname)
@@ -457,13 +458,17 @@ with open(pkgpath + "README.txt", "w") as readme:
                 mesUnits = md.measurementUnit.strip().replace("1", "<sup>1</sup>").replace("2", "<sup>2</sup>").replace("-", "<sup>-</sup>").replace("3", "<sup>3</sup>")
             else: 
                 mesUnits = ""
+            if not pd.isna(md.missingValues):
+                missValues = md.missingValues
+            else: 
+                missValues = ""
             if fld.name: 
                 readme.writelines("|"+fld.name)
             else :
                 readme.writelines("|")
             ## +"|"+fld.title+"|"+fld.type+"|"+fld.format) 
-            if fld.title: 
-                readme.writelines("|"+fld.title)
+            if md.title: 
+                readme.writelines("|"+md.title)
             else :
                 readme.writelines("|")
             if fld.type:
@@ -474,21 +479,26 @@ with open(pkgpath + "README.txt", "w") as readme:
                 readme.writelines("|"+fld.format)
             else:
                 readme.writelines("|")
-            if fld.rdf_type:
-                readme.writelines("|["+fld.rdf_type+"]("+fld.rdf_type+")")
+            if not pd.isna(md.rdfType):
+                readme.writelines("|["+md.rdfType+"]("+md.rdfType+")")
             else:
                 readme.writelines("|")
-            if  fld.missing_values: 
-                readme.writelines("|"+" ".join(str(mv) for mv in fld.missing_values))
+            if  not pd.isna(md.missingValues): 
+                readme.writelines("|"+ md.missingValues)
             else:
                 readme.writelines("|")   
             if  mesUnits: 
                 readme.writelines("|"+mesUnits)
             else:
                 readme.writelines("|")
-            if fld.description:
+
+            if not pd.isna(md.description):
                 #print(fld.description)
-                readme.writelines("|"+fld.description)
+                readme.writelines("|"+md.description)
+            else:
+                readme.writelines("|")
+            if not pd.isna(md.reference):
+                readme.writelines("|["+md.reference+"]("+md.reference+")")
             else:
                 readme.writelines("|")
             readme.writelines("|\n")
